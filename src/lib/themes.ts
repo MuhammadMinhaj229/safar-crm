@@ -14,6 +14,7 @@
  */
 
 export const THEME_IDS = [
+  "safar",
   "violet",
   "emerald",
   "cobalt",
@@ -23,7 +24,7 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = "violet";
+export const DEFAULT_THEME: ThemeId = "safar";
 
 export const STORAGE_KEY = "wacrm.theme";
 
@@ -67,6 +68,12 @@ export interface ThemeMeta {
 }
 
 export const THEMES: ReadonlyArray<ThemeMeta> = [
+  {
+    id: "safar",
+    name: "SAFAR N MANZIL",
+    tagline: "Your official brand identity — warm, premium, and trustworthy.",
+    swatch: "#FF9B6A",
+  },
   {
     id: "violet",
     name: "Violet",
