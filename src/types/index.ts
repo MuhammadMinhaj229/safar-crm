@@ -480,7 +480,8 @@ export type AutomationStepType =
   | 'wait'
   | 'condition'
   | 'send_webhook'
-  | 'close_conversation';
+  | 'close_conversation'
+  | 'safar_service_triage';
 
 export type AutomationLogStatus = 'success' | 'partial' | 'failed';
 
@@ -593,6 +594,10 @@ export interface SendWebhookStepConfig {
   body_template?: string;
 }
 
+export interface SafarServiceTriageStepConfig {
+  service_definition_id: string;
+}
+
 export type AutomationStepConfig =
   | SendMessageStepConfig
   | SendButtonsStepConfig
@@ -605,6 +610,7 @@ export type AutomationStepConfig =
   | WaitStepConfig
   | ConditionStepConfig
   | SendWebhookStepConfig
+  | SafarServiceTriageStepConfig
   | Record<string, never>
   | Record<string, unknown>;
 

@@ -1,0 +1,2 @@
+-- 042 seed script disabled for production cloud push due to auth.users foreign key constraints
+-- Seed data will be created via the application UI instead.

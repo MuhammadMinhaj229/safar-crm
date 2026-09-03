@@ -17,6 +17,8 @@ import type {
   WaitStepConfig,
   CreateDealStepConfig,
   AssignConversationStepConfig,
+  SafarServiceTriageStepConfig,
+  InteractiveMessagePayload,
 } from '@/types'
 import { supabaseAdmin } from './admin-client'
 import { addContactTagIfAbsent } from '@/lib/contacts/tag-write'
@@ -617,6 +619,126 @@ async function runStep(step: AutomationStep, args: ExecuteArgs): Promise<string>
         .eq('account_id', args.automation.account_id)
         .eq('contact_id', args.contactId)
       return 'conversation closed'
+    }
+
+    case 'safar_service_triage': {
+      const cfg = step.step_config as SafarServiceTriageStepConfig
+      if (!args.contactId) throw new Error('safar_service_triage needs a contact')
+
+      // 1. Get or create active service_request for this contact
+      let { data: sr } = await db
+        .from('service_requests')
+        .select('*')
+        .eq('contact_id', args.contactId)
+        .eq('status', 'triage')
+        .maybeSingle()
+
+      if (!sr) {
+        // Find starting node for this service
+        const { data: startNode } = await db
+          .from('decision_tree_nodes')
+          .select('id')
+          .eq('service_definition_id', cfg.service_definition_id)
+          .eq('is_starting_node', true)
+          .maybeSingle()
+
+        if (!startNode) throw new Error(`No starting node for service ${cfg.service_definition_id}`)
+
+        const { data: newSr } = await db
+          .from('service_requests')
+          .insert({
+            contact_id: args.contactId,
+            service_definition_id: cfg.service_definition_id,
+            status: 'triage',
+            current_node_id: startNode.id,
+            collected_data: {}
+          })
+          .select('*')
+          .single()
+        sr = newSr
+      } else {
+        // Handle input and transition state
+        const { data: branches } = await db
+          .from('decision_tree_branches')
+          .select('*')
+          .eq('from_node_id', sr.current_node_id)
+
+        let chosenBranch = null
+        if (args.context.interactive_reply_id) {
+            chosenBranch = branches?.find(b => b.id === args.context.interactive_reply_id)
+        } else if (args.context.message_text) {
+            const txt = args.context.message_text.toLowerCase()
+            chosenBranch = branches?.find(b => b.branch_type === 'text_input' || txt.includes((b.condition_value || '').toLowerCase()))
+        }
+
+        if (chosenBranch) {
+            let collectedData = sr.collected_data || {}
+            if (chosenBranch.branch_type === 'text_input' && args.context.message_text) {
+                const { data: node } = await db.from('decision_tree_nodes').select('node_type').eq('id', sr.current_node_id).single()
+                if (node && node.node_type) {
+                    collectedData[node.node_type] = args.context.message_text
+                }
+            }
+
+            const { data: updatedSr } = await db
+              .from('service_requests')
+              .update({ 
+                  current_node_id: chosenBranch.to_node_id,
+                  collected_data: collectedData
+              })
+              .eq('id', sr.id)
+              .select('*')
+              .single()
+            sr = updatedSr
+        }
+      }
+
+      // Fetch the current node to send to the user
+      const { data: currentNode } = await db
+        .from('decision_tree_nodes')
+        .select('*')
+        .eq('id', sr.current_node_id)
+        .single()
+
+      if (!currentNode) throw new Error('Invalid current_node_id in service_request')
+
+      if (currentNode.node_type === 'human_handoff') {
+          return 'safar triage: handed off to human'
+      }
+      
+      const conversationId = await resolveConversationId(args)
+      const { data: outBranches } = await db
+        .from('decision_tree_branches')
+        .select('*')
+        .eq('from_node_id', currentNode.id)
+
+      if (outBranches && outBranches.length > 0 && outBranches.every(b => b.branch_type === 'button')) {
+         const payload: InteractiveMessagePayload = {
+            kind: 'buttons',
+            body: currentNode.question_text || 'Please select:',
+            buttons: outBranches.slice(0, 3).map(b => ({
+                id: b.id,
+                title: b.condition_value || 'Option'
+            }))
+         }
+         await engineSendInteractive({
+            accountId: args.automation.account_id,
+            userId: args.automation.user_id,
+            conversationId,
+            contactId: args.contactId,
+            payload,
+         })
+         return `safar triage: sent buttons for node ${currentNode.id}`
+      } else {
+         await engineSendText({
+            accountId: args.automation.account_id,
+            userId: args.automation.user_id,
+            conversationId,
+            contactId: args.contactId,
+            text: currentNode.question_text || 'Please reply:',
+         })
+         return `safar triage: sent text for node ${currentNode.id}`
+      }
     }
 
     default:
