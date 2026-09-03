@@ -18,6 +18,7 @@ import {
   Radio,
   Settings,
   Shield,
+  TrendingUp,
   User,
   UserCog,
   Users,
@@ -93,6 +94,7 @@ const navItems: NavItem[] = [
   { href: "/dashboard", labelKey: "dashboard", icon: LayoutDashboard },
   { href: "/inbox", labelKey: "inbox", icon: MessageSquare },
   { href: "/notifications", labelKey: "notifications", icon: Bell },
+  { href: "/leads", labelKey: "leads", icon: TrendingUp },
   { href: "/contacts", labelKey: "contacts", icon: Users },
   { href: "/pipelines", labelKey: "pipelines", icon: GitBranch },
   { href: "/broadcasts", labelKey: "broadcasts", icon: Radio },
@@ -188,11 +190,13 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             close button is hidden since the sidebar is always-visible. */}
         <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <MessageSquare className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.80_0.13_55)] text-primary-foreground shadow-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+              </svg>
             </div>
-            <span className="text-sm font-semibold text-foreground">
-              {t("title")}
+            <span className="text-sm font-semibold text-foreground tracking-tight">
+              Safar <span className="inline-flex items-center justify-center bg-primary/20 text-primary text-[9px] font-black w-[1.2em] h-[1.2em] rounded-full border border-primary/30 leading-none mx-0.5">N</span> Manzil
             </span>
           </Link>
           <button

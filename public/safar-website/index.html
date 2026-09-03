@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAFAR N MANZIL | Premium Gulf Assistance Service</title>
+    <meta name="description" content="SAFAR N MANZIL makes life easier for people travelling to and living in the Gulf. Your one reliable starting point.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ---- CRM Lead Form Additions ---- */
+        .lead-capture-form {
+            background: linear-gradient(135deg, #FFF7F3 0%, #FFF0E8 100%);
+            border: 1.5px solid rgba(255,155,106,0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .lead-capture-form h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #2D3748;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .lead-fields-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 600px) {
+            .lead-fields-row { grid-template-columns: 1fr; }
+        }
+        .lead-field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+        .lead-field input {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 1.5px solid rgba(255,155,106,0.3);
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            color: #2D3748;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .lead-field input:focus {
+            outline: none;
+            border-color: #FF9B6A;
+            box-shadow: 0 0 0 3px rgba(255,155,106,0.15);
+        }
+        .lead-field input::placeholder {
+            color: #A0AEC0;
+        }
+        .crm-status-msg {
+            display: none;
+            margin-top: 0.8rem;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .crm-status-msg.success {
+            background: #C6F6D5;
+            color: #276749;
+        }
+        .crm-status-msg.error {
+            background: #FED7D7;
+            color: #9B2C2C;
+        }
+        .btn-solid.btn-loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        /* Divider between CRM form and WhatsApp builder */
+        .form-section-divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        .form-section-divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255,155,106,0.2);
+        }
+        .form-section-divider span {
+            position: relative;
+            background: white;
+            padding: 0 1rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #A0AEC0;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Hero Section: The Dribbble Presentation -->
+    <div class="presentation-bg">
+        <div class="dribbble-card shadow-lg">
+            <!-- Navbar -->
+            <nav class="top-nav">
+                <a href="index.html" class="logo" aria-label="SAFAR N MANZIL Home">
+                    <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+                    <span class="logo-text">Safar <span class="logo-accent">N</span> Manzil</span>
+                </a>
+                <div class="nav-links">
+                    <a href="#how-it-works">How it Works</a>
+                    <a href="#safar-go">Going to Gulf</a>
+                    <a href="#safar-home">Living in Gulf</a>
+                    <a href="#contact">Contact Us</a>
+                </div>
+                <div class="search-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF914D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+            </nav>
+
+            <!-- Hero Content -->
+            <div class="hero-content">
+                <div class="hero-text fade-in-up">
+                    <h3 class="subtitle"><span class="brand-name">SAFAR <span class="brand-n-badge-white">N</span> MANZIL</span> Assistance</h3>
+                    <h1 class="main-title">Tell us what you need.</h1>
+                    <p class="description">Going to the Gulf or already living there? We make it easy to get things done. From travel packing to helping your family back home.</p>
+                    
+                    <div class="cta-area">
+                        <div class="btn-highlight"></div>
+                        <a href="#contact" class="cta-pill">Get Started — <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span></a>
+                    </div>
+                    
+                    <div class="social-links delay-1 fade-in-up">
+                        <a href="#" class="social-icon" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        </a>
+                        <a href="#" class="social-icon" aria-label="Twitter">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                        </a>
+                        <a href="https://whatsapp.com/channel/0029VbD5C7AKrWQwktRWrP2J" class="social-icon" aria-label="WhatsApp Channel">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                        </a>
+                        <a href="#" class="social-icon" aria-label="YouTube">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"></polygon></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-illustration fade-in-up delay-2">
+                    <img src="hero-illustration.jpg" alt="Family traveling to the Gulf">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN WEBSITE CONTENT -->
+    <main class="main-content">
+        
+        <!-- HOW IT WORKS -->
+        <section id="how-it-works" class="section-padding bg-light">
+            <div class="container">
+                <div class="section-header text-center fade-in-up">
+                    <span class="badge">How It Works</span>
+                    <h2>Three Ways We Help You</h2>
+                    <p>Instead of searching for many different people, just ask <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span>. Here is how we handle your requests.</p>
+                </div>
+                
+                <div class="process-grid">
+                    <div class="process-card fade-in-up delay-1">
+                        <div class="process-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        </div>
+                        <h3>We Do</h3>
+                        <p>If you need packing materials like boxes, covers, or scales, we provide them directly to you.</p>
+                    </div>
+                    <div class="process-card fade-in-up delay-2">
+                        <div class="process-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+                        </div>
+                        <h3>We Assist</h3>
+                        <p>If you need help with online forms, visas, or documents, we guide you through the exact process safely.</p>
+                    </div>
+                    <div class="process-card fade-in-up delay-3">
+                        <div class="process-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h3>We Connect</h3>
+                        <p>If you need a cab or transport, we connect you to our trusted, verified local partners.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SAFAR GO SECTION -->
+        <section id="safar-go" class="section-padding bg-white">
+            <div class="container">
+                <div class="section-header text-center fade-in-up">
+                    <span class="badge badge-orange"><span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span> GO</span>
+                    <h2>Going to the Gulf?</h2>
+                    <p>Preparing to travel from India to Saudi Arabia, UAE, Qatar, Kuwait, Oman, or Bahrain? We make your departure stress-free.</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-box fade-in-up">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.2-1.1.7l-1.3 2.6c-.2.4.1 1 .6 1.1l7.4 2.2-2.8 2.8-3.7-.9c-.4-.1-.8.2-1 .6l-.8 1.6c-.2.4 0 .9.4 1l4.5 1.1 1.1 4.5c.1.4.6.6 1 .4l1.6-.8c.4-.2.7-.6.6-1l-.9-3.7 2.8-2.8 2.2 7.4c.1.5.7.8 1.1.6l2.6-1.3c.5-.2.8-.6.7-1.1z"></path></svg>
+                        </div>
+                        <h4>Travel Assistance</h4>
+                        <p>We help you fill out online applications, guide you on visa rules, and help arrange your tickets.</p>
+                    </div>
+                    <div class="feature-box fade-in-up delay-1">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="12" height="14" rx="2" ry="2"></rect><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><circle cx="8" cy="22" r="1"></circle><circle cx="16" cy="22" r="1"></circle><line x1="12" y1="11" x2="12" y2="19"></line></svg>
+                        </div>
+                        <h4>Packing Essentials</h4>
+                        <p>Get luggage scales, strong carton boxes, vacuum bags, and wrapping material delivered to you.</p>
+                    </div>
+                    <div class="feature-box fade-in-up delay-2">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"></path><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path><line x1="6" y1="2" x2="6" y2="4"></line><line x1="10" y1="2" x2="10" y2="4"></line><line x1="14" y1="2" x2="14" y2="4"></line></svg>
+                        </div>
+                        <h4>Food for the Trip</h4>
+                        <p>We arrange properly packed homemade snacks, pickles, ginger-garlic paste, and spices for your journey.</p>
+                    </div>
+                    <div class="feature-box fade-in-up delay-3">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a2 2 0 0 0-1.6-.8H9.3a2 2 0 0 0-1.6.8L5 11l-5.16.86a1 1 0 0 0-.84.99V16h3m14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"></path></svg>
+                        </div>
+                        <h4>Local Travel</h4>
+                        <p>We connect you with trusted airport cabs and help with packing your luggage safely at home.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SAFAR HOME SECTION -->
+        <section id="safar-home" class="section-padding bg-gradient-light">
+            <div class="container">
+                <div class="two-col-layout align-center">
+                    <div class="text-content fade-in-up">
+                        <span class="badge badge-orange"><span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span> HOME</span>
+                        <h2>Living in the Gulf?</h2>
+                        <h3 class="sub-headline">We support your family back in India.</h3>
+                        <p>When you are far away, it can be hard to arrange things for your family. Don't worry about who to trust—just ask <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span>.</p>
+                        
+                        <ul class="benefit-list">
+                            <li><strong>Family Purchases:</strong> Need to buy something for your parents? We'll get it.</li>
+                            <li><strong>Household Help:</strong> We coordinate verified local services for your home.</li>
+                            <li><strong>Send Things Home:</strong> Need to send items locally to your family? We manage it.</li>
+                        </ul>
+                        <a href="#contact" class="btn-solid mt-4">Ask For Help Now</a>
+                    </div>
+                    <div class="image-content fade-in-up delay-2">
+                        <div class="trust-card">
+                            <div class="trust-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                            </div>
+                            <h3>Peace of Mind</h3>
+                            <p>"I live in Dubai, and <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span> helped arrange a trusted cab and delivered groceries to my parents in India. It is so easy!"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY CHOOSE US -->
+        <section class="section-padding bg-white">
+            <div class="container">
+                <div class="section-header text-center fade-in-up">
+                    <h2>Why Trust <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span>?</h2>
+                    <p>We are not just a travel agency. We are your local community helper.</p>
+                </div>
+                
+                <div class="trust-grid">
+                    <div class="trust-item fade-in-up">
+                        <div class="trust-item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <h4>Easy to Use</h4>
+                        <p>Just one WhatsApp message. No complicated apps to learn.</p>
+                    </div>
+                    <div class="trust-item fade-in-up delay-1">
+                        <div class="trust-item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h4>Local Trust</h4>
+                        <p>We understand our community, your family, and what you need.</p>
+                    </div>
+                    <div class="trust-item fade-in-up delay-2">
+                        <div class="trust-item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <h4>No Hidden Fees</h4>
+                        <p>Clear prices for products and transparent service charges.</p>
+                    </div>
+                    <div class="trust-item fade-in-up delay-3">
+                        <div class="trust-item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <h4>We Coordinate</h4>
+                        <p>We handle talking to different shops and drivers so you don't have to.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION -->
+        <section id="faq" class="section-padding bg-light">
+            <div class="container">
+                <div class="section-header text-center fade-in-up">
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+                
+                <div class="faq-container fade-in-up delay-1">
+                    <div class="faq-item">
+                        <button class="faq-question">How do I ask for help? <span class="arrow">▼</span></button>
+                        <div class="faq-answer">
+                            <p>It is very simple! Fill in the quick form below and we will contact you, or click the WhatsApp button to message us directly.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Do you issue visas directly? <span class="arrow">▼</span></button>
+                        <div class="faq-answer">
+                            <p>No, we do not issue visas ourselves. We *assist* you by guiding you through official channels and helping you understand the correct forms and documents.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">What if I only need one small thing? <span class="arrow">▼</span></button>
+                        <div class="faq-answer">
+                            <p>That is perfectly fine! Whether you just need a luggage scale, or you need full travel assistance, <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span> is happy to help with small requests.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Are the food items allowed on flights? <span class="arrow">▼</span></button>
+                        <div class="faq-answer">
+                            <p>We pack food securely for travel. However, airline and customs rules change depending on the destination country. We will guide you, but you must declare items appropriately.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHATSAPP CHANNEL SECTION -->
+        <section class="section-padding bg-white">
+            <div class="container fade-in-up">
+                <div class="wa-channel-card">
+                    <div class="wa-channel-content">
+                        <div class="wa-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                        </div>
+                        <div class="wa-channel-text">
+                            <h2>Join the <span class="brand-name">SAFAR <span class="brand-n-badge-white">N</span> MANZIL</span> Community</h2>
+                            <p>Get the latest updates, travel tips, and exclusive services by following our WhatsApp Channel.</p>
+                        </div>
+                    </div>
+                    <a href="https://whatsapp.com/channel/0029VbD5C7AKrWQwktRWrP2J" target="_blank" class="wa-btn">
+                        Follow Channel
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- CONTACT & REQUEST FORM (FOOTER) -->
+    <footer class="main-footer" id="contact">
+        <div class="container fade-in-up">
+            <div class="smart-form-container">
+                <div class="form-header text-center">
+                    <h2>Tell us what you need.</h2>
+                    <p>Fill in your details below and we'll reach out — or use the quick request builder to send a WhatsApp message instantly.</p>
+                </div>
+
+                <!-- ── PART 1: Lead Capture Form (goes to CRM) ── -->
+                <div class="lead-capture-form">
+                    <h3>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF9B6A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        Quick Contact — We'll Reach You!
+                    </h3>
+                    <div class="lead-fields-row">
+                        <div class="lead-field">
+                            <label for="lead-name">Your Full Name *</label>
+                            <input type="text" id="lead-name" placeholder="e.g. Ahmed Al-Rashidi" required>
+                        </div>
+                        <div class="lead-field">
+                            <label for="lead-phone">WhatsApp Number *</label>
+                            <input type="tel" id="lead-phone" placeholder="e.g. +91 9876543210" required>
+                        </div>
+                    </div>
+                    <div class="lead-fields-row">
+                        <div class="lead-field">
+                            <label for="lead-email">Email (Optional)</label>
+                            <input type="email" id="lead-email" placeholder="e.g. ahmed@email.com">
+                        </div>
+                        <div class="lead-field">
+                            <label for="lead-service">Service Needed</label>
+                            <input type="text" id="lead-service" placeholder="e.g. Packing boxes, airport taxi…">
+                        </div>
+                    </div>
+                    <div style="text-align:center; margin-top: 1rem;">
+                        <button id="submit-lead-btn" class="btn-solid" style="min-width: 220px;">
+                            ✅ Submit — We'll Call You Back
+                        </button>
+                    </div>
+                    <div id="crm-status" class="crm-status-msg"></div>
+                </div>
+
+                <div class="form-section-divider">
+                    <span>or send via WhatsApp right now</span>
+                </div>
+
+                <!-- ── PART 2: WhatsApp Smart Builder (original) ── -->
+                <div class="smart-form">
+                    <!-- Step 1: User Type -->
+                    <div class="form-step">
+                        <h3>1. Where are you based?</h3>
+                        <div class="user-type-cards">
+                            <label class="type-card">
+                                <input type="radio" name="user_type" value="going" checked>
+                                <div class="card-content">
+                                    <span class="card-icon">✈️</span>
+                                    <h4>In India</h4>
+                                    <p>Preparing to go to the Gulf</p>
+                                </div>
+                            </label>
+                            <label class="type-card">
+                                <input type="radio" name="user_type" value="living">
+                                <div class="card-content">
+                                    <span class="card-icon">🏠</span>
+                                    <h4>In the Gulf</h4>
+                                    <p>Need help for family in India</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Needs -->
+                    <div class="form-step">
+                        <h3>2. What do you need help with?</h3>
+                        
+                        <!-- Options for 'Going to Gulf' -->
+                        <div class="needs-container active" id="needs-going">
+                            <label class="need-pill"><input type="checkbox" value="Carton Boxes for Packing"><span>📦 Carton Boxes</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Vacuum Bags &amp; Packing Material"><span>🛍️ Vacuum Bags</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Luggage Weight Scale"><span>⚖️ Luggage Scale</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Help Packing at Home"><span>👷 Home Packing Help</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Visa Forms Help"><span>📝 Visa Forms Help</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Flight Tickets"><span>✈️ Flight Tickets</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Homemade Pickles &amp; Spices"><span>🍲 Pickles &amp; Spices</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Trusted Airport Taxi"><span>🚕 Airport Taxi</span></label>
+                        </div>
+
+                        <!-- Options for 'Living in Gulf' -->
+                        <div class="needs-container" id="needs-living">
+                            <label class="need-pill"><input type="checkbox" value="Buy Gifts for Parents"><span>🎁 Buy Gifts for Parents</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Deliver Groceries to Family"><span>🛍️ Family Groceries</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Fix Things at Home"><span>🔧 Home Repairs</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Find Trusted Driver"><span>🚗 Find a Driver</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Medical Coordination"><span>🏥 Medical Coordination</span></label>
+                            <label class="need-pill"><input type="checkbox" value="Local Deliveries"><span>🛵 Local Deliveries</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Details -->
+                    <div class="form-step">
+                        <h3>3. Any specific details? <span class="optional">(Optional)</span></h3>
+                        <textarea id="custom-details" rows="3" placeholder="Example: Need cab from Calicut airport at 3 AM..."></textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-submit text-center">
+                        <button id="send-whatsapp-btn" class="btn-solid btn-large">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px; vertical-align:middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            Send Request via WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <a href="index.html" class="logo footer-logo" aria-label="SAFAR N MANZIL Home">
+                    <svg class="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="#FF914D" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+                    <span class="logo-text" style="color:#2D3748;">Safar <span class="logo-accent-dark">N</span> Manzil</span>
+                </a>
+                <div class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                </div>
+                <p>&copy; 2026 <span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span> Gulf Assistance. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // ── CRM Lead Capture ──────────────────────────────────────────
+        // Replace this URL with your actual Vercel CRM deployment URL after deployment.
+        // e.g. https://safar-crm.vercel.app/api/public/lead
+        const CRM_API_URL = 'https://your-crm-vercel-url.vercel.app/api/public/lead';
+
+        document.getElementById('submit-lead-btn').addEventListener('click', async function() {
+            const name = document.getElementById('lead-name').value.trim();
+            const phone = document.getElementById('lead-phone').value.trim();
+            const email = document.getElementById('lead-email').value.trim();
+            const service = document.getElementById('lead-service').value.trim();
+            const statusEl = document.getElementById('crm-status');
+            const btn = this;
+
+            if (!name || !phone) {
+                statusEl.textContent = '⚠️ Please enter your name and WhatsApp number.';
+                statusEl.className = 'crm-status-msg error';
+                statusEl.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Sending…';
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            statusEl.style.display = 'none';
+
+            try {
+                const res = await fetch(CRM_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        phone,
+                        email: email || null,
+                        service_interest: service || null,
+                        source: 'website'
+                    })
+                });
+
+                if (res.ok) {
+                    statusEl.textContent = '✅ Thank you! We\'ll reach you on WhatsApp shortly.';
+                    statusEl.className = 'crm-status-msg success';
+                    // Clear fields
+                    document.getElementById('lead-name').value = '';
+                    document.getElementById('lead-phone').value = '';
+                    document.getElementById('lead-email').value = '';
+                    document.getElementById('lead-service').value = '';
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (err) {
+                statusEl.textContent = '❌ Could not send. Please WhatsApp us directly at +91 7207071874';
+                statusEl.className = 'crm-status-msg error';
+            } finally {
+                statusEl.style.display = 'block';
+                btn.textContent = '✅ Submit — We\'ll Call You Back';
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

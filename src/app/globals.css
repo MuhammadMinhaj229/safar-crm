@@ -147,7 +147,6 @@ html[data-mode="light"] {
 
 /* ---- ACCENT: primary color ---- */
 
-:root,
 html[data-theme="violet"] {
   --primary: oklch(0.526 0.247 293);
   --primary-foreground: oklch(0.985 0 0);
@@ -215,6 +214,22 @@ html[data-theme="rose"] {
   --sidebar-primary: oklch(0.645 0.22 16);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-ring: oklch(0.645 0.22 16);
+}
+
+/* SAFAR N MANZIL brand orange — #FF9B6A ≈ oklch(0.74 0.17 42) */
+html[data-theme="safar"],
+:root {
+  --primary: oklch(0.74 0.17 42);
+  --primary-foreground: oklch(0.985 0 0);
+  --primary-hover: oklch(0.80 0.15 42);
+  --primary-soft: oklch(0.74 0.17 42 / 0.12);
+  --primary-soft-2: oklch(0.74 0.17 42 / 0.22);
+  --ring: oklch(0.74 0.17 42);
+  --chart-1: oklch(0.74 0.17 42);
+  --chart-2: oklch(0.80 0.13 55);
+  --sidebar-primary: oklch(0.74 0.17 42);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-ring: oklch(0.74 0.17 42);
 }
 
 @layer base {
