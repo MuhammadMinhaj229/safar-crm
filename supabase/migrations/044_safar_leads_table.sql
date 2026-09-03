@@ -44,40 +44,19 @@ ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 
 -- Account members can read leads in their account
 CREATE POLICY "leads_select" ON public.leads
-  FOR SELECT USING (
-    account_id IN (
-      SELECT account_id FROM public.account_members
-      WHERE profile_id = auth.uid()
-    )
-  );
+  FOR SELECT USING (is_account_member(account_id));
 
 -- Account members (agents+) can insert leads
 CREATE POLICY "leads_insert" ON public.leads
-  FOR INSERT WITH CHECK (
-    account_id IN (
-      SELECT account_id FROM public.account_members
-      WHERE profile_id = auth.uid()
-    )
-  );
+  FOR INSERT WITH CHECK (is_account_member(account_id, 'agent'));
 
 -- Account members can update leads in their account
 CREATE POLICY "leads_update" ON public.leads
-  FOR UPDATE USING (
-    account_id IN (
-      SELECT account_id FROM public.account_members
-      WHERE profile_id = auth.uid()
-    )
-  );
+  FOR UPDATE USING (is_account_member(account_id, 'agent'));
 
 -- Account members (admin+) can delete leads
 CREATE POLICY "leads_delete" ON public.leads
-  FOR DELETE USING (
-    account_id IN (
-      SELECT account_id FROM public.account_members
-      WHERE profile_id = auth.uid()
-        AND role IN ('owner', 'admin')
-    )
-  );
+  FOR DELETE USING (is_account_member(account_id, 'admin'));
 
 -- Service-role bypass for public website submissions (no auth)
 -- The API route uses the service_role key to insert with account_id from env
