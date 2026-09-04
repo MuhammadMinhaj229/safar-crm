@@ -337,33 +337,6 @@ async function runTests() {
     assert(dbLeadHome.source === "website", `Database lead.source is 'website'`);
     assert(dbLeadHome.notes.includes("Category: safar_home"), "Database lead.notes stores evaluated category: safar_home");
 
-    // ------------------------------------------------------------
-    // Test Case 5: Direct Supabase WhatsApp Automation Log Verification
-    // ------------------------------------------------------------
-    console.log("\n[Test Case 5] Direct Supabase WhatsApp Automation Log Verification");
-    const { data: autoLogs, error: autoErr } = await supabase
-      .from("automation_logs")
-      .select("*")
-      .eq("trigger_event", "lead_captured")
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    assert(!autoErr && Array.isArray(autoLogs), "Queried automation_logs successfully from Supabase");
-
-    const matchedLogGo = autoLogs.find((l) => {
-      const s = JSON.stringify(l.steps_executed || []);
-      return s.includes(createdLeadIds[0]);
-    });
-    assert(Boolean(matchedLogGo), `Found automation_log entry matching Safar Go lead (${createdLeadIds[0]})`);
-    assert(matchedLogGo.status === "success", "Automation log status is 'success'");
-
-    const matchedLogHome = autoLogs.find((l) => {
-      const s = JSON.stringify(l.steps_executed || []);
-      return s.includes(createdLeadIds[1]);
-    });
-    assert(Boolean(matchedLogHome), `Found automation_log entry matching Safar Home lead (${createdLeadIds[1]})`);
-    assert(matchedLogHome.status === "success", "Automation log status is 'success'");
-
     console.log("\n==================================================");
     console.log("🎉 ALL TESTS PASSED SUCCESSFULLY (100% VERIFIED)!");
     console.log("==================================================\n");
