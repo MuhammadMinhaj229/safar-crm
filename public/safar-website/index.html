@@ -111,6 +111,67 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
+
+        /* ---- Feedback Section Additions ---- */
+        .feedback-section {
+            background: white;
+            border: 1.5px solid rgba(255,155,106,0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0 1.5rem;
+            flex-direction: row-reverse;
+        }
+        .rating-stars input {
+            display: none;
+        }
+        .rating-stars label {
+            font-size: 2rem;
+            color: #E2E8F0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label,
+        .rating-stars input:checked ~ label {
+            color: #F6AD55;
+        }
+        
+        #feedback-success-state {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .share-wa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #25D366;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1.5rem;
+        }
+        .share-wa-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(37, 211, 102, 0.6);
+            color: white;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -361,6 +422,56 @@
             </div>
         </section>
 
+        <!-- FEEDBACK SECTION -->
+        <section id="feedback" class="section-padding bg-gradient-light">
+            <div class="container fade-in-up">
+                <div class="feedback-section shadow-lg">
+                    <div id="feedback-form-state">
+                        <span class="badge badge-orange"><span class="brand-name">SAFAR <span class="brand-n-badge">N</span> MANZIL</span> REVIEWS</span>
+                        <h2>Rate Your Experience</h2>
+                        <p style="margin-bottom: 2rem;">We are constantly improving. Let us know how we did!</p>
+                        
+                        <div class="lead-fields-row" style="text-align: left;">
+                            <div class="lead-field" style="grid-column: 1 / -1;">
+                                <label for="fb-name">Your Name *</label>
+                                <input type="text" id="fb-name" placeholder="Enter your name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="rating-stars">
+                            <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                        </div>
+
+                        <div class="lead-field" style="text-align: left; margin-bottom: 1.5rem;">
+                            <label for="fb-comments">Comments (Optional)</label>
+                            <input type="text" id="fb-comments" placeholder="What did you like? What can we improve?">
+                        </div>
+
+                        <button id="submit-feedback-btn" class="btn-solid btn-large" style="width: 100%;">
+                            Submit Feedback
+                        </button>
+                        <div id="fb-status" class="crm-status-msg"></div>
+                    </div>
+                    
+                    <div id="feedback-success-state">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h2>Thank You for Your Feedback!</h2>
+                        <p style="font-size: 1.1rem; color: #4A5568; margin-top: 1rem;">
+                            If you liked our service, please share this with your loved ones so we can build a community of impact and safety!
+                        </p>
+                        <a href="#" id="wa-share-link" target="_blank" class="share-wa-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                            Share on WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- WHATSAPP CHANNEL SECTION -->
         <section class="section-padding bg-white">
             <div class="container fade-in-up">
@@ -571,6 +682,59 @@
             } finally {
                 statusEl.style.display = 'block';
                 btn.textContent = '✅ Submit — We\'ll Call You Back';
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+            }
+        });
+        // ── CRM Feedback Capture ──────────────────────────────────────────
+        const FEEDBACK_API_URL = 'https://safar-crm-theta.vercel.app/api/public/feedback';
+        
+        // Pre-written WhatsApp Share Message
+        const shareMessage = `Alhamdulillah We've started something we’ve been working on. This is Minhaj from\n " SAFAR N MANZIL  ".\n\nThe idea is simple: when you need something done, you shouldn’t have to figure out whom to call.\n\nWhether it’s a local service, help for your family back home while you are living in gulf, or something you need while preparing for the Gulf —\n just message us.\nWe’ll understand the requirement, coordinate the right help, and keep you updated.\n\nJust Message Us On WhatsApp : https://wa.me/7207071874\n\nCheckout our Website: \nhttps://safar-rouge.vercel.app/#\n\nFollow our whatsapp Channel for more updates: \nhttps://whatsapp.com/channel/0029VbD5C7AKrWQwktRWrP2J`;
+        
+        // Setup WhatsApp Share Link
+        document.getElementById('wa-share-link').href = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+
+        document.getElementById('submit-feedback-btn').addEventListener('click', async function() {
+            const name = document.getElementById('fb-name').value.trim();
+            const comments = document.getElementById('fb-comments').value.trim();
+            const ratingEl = document.querySelector('input[name="rating"]:checked');
+            const statusEl = document.getElementById('fb-status');
+            const btn = this;
+
+            if (!name || !ratingEl) {
+                statusEl.textContent = '⚠️ Please enter your name and select a star rating.';
+                statusEl.className = 'crm-status-msg error';
+                statusEl.style.display = 'block';
+                return;
+            }
+
+            const rating = ratingEl.value;
+
+            btn.textContent = 'Submitting…';
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            statusEl.style.display = 'none';
+
+            try {
+                // In a real scenario, change the URL to the exact deployed URL
+                const res = await fetch(FEEDBACK_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, rating, comments })
+                });
+
+                if (res.ok) {
+                    document.getElementById('feedback-form-state').style.display = 'none';
+                    document.getElementById('feedback-success-state').style.display = 'block';
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (err) {
+                statusEl.textContent = '❌ Could not submit feedback. Please try again.';
+                statusEl.className = 'crm-status-msg error';
+                statusEl.style.display = 'block';
+                btn.textContent = 'Submit Feedback';
                 btn.classList.remove('btn-loading');
                 btn.disabled = false;
             }
