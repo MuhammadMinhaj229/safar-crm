@@ -668,12 +668,12 @@ async function runStep(step: AutomationStep, args: ExecuteArgs): Promise<string>
             chosenBranch = branches?.find(b => b.id === args.context.interactive_reply_id)
         } else if (args.context.message_text) {
             const txt = args.context.message_text.toLowerCase()
-            chosenBranch = branches?.find(b => b.branch_type === 'text_input' || txt.includes((b.condition_value || '').toLowerCase()))
+            chosenBranch = branches?.find(b => b.answer_text === '*TEXT_INPUT*' || txt.includes((b.answer_text || '').toLowerCase()))
         }
 
         if (chosenBranch) {
             let collectedData = sr.collected_data || {}
-            if (chosenBranch.branch_type === 'text_input' && args.context.message_text) {
+            if (chosenBranch.answer_text === '*TEXT_INPUT*' && args.context.message_text) {
                 const { data: node } = await db.from('decision_tree_nodes').select('node_type').eq('id', sr.current_node_id).single()
                 if (node && node.node_type) {
                     collectedData[node.node_type] = args.context.message_text
@@ -712,7 +712,7 @@ async function runStep(step: AutomationStep, args: ExecuteArgs): Promise<string>
         .select('*')
         .eq('from_node_id', currentNode.id)
 
-      if (outBranches && outBranches.length > 0 && outBranches.every(b => b.branch_type === 'button')) {
+      if (outBranches && outBranches.length > 0 && outBranches.every(b => b.answer_text !== '*TEXT_INPUT*')) {
          const payload: InteractiveMessagePayload = {
             kind: 'buttons',
             body: currentNode.question_text || 'Please select:',

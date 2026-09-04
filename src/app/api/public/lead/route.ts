@@ -6,6 +6,7 @@ import {
   generateFaqPreview,
   SafarCategory,
 } from "@/lib/safar/agent-knowledge";
+import { runAutomationsForTrigger } from "@/lib/automations/engine";
 
 // Helper for CORS response headers
 function getCorsHeaders(origin: string = "*") {
@@ -162,76 +163,73 @@ export async function POST(request: Request) {
       );
     }
 
-    // 6. WhatsApp Automation Trigger: Queue or log automated WhatsApp welcome/FAQ message
-    let messageId = `wa_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-
+    // 6. WhatsApp Automation Trigger: Create Contact/Conversation and Dispatch Engine
+    let messageId = `wa_queued_${Date.now()}`;
     try {
-      // Resolve or create automation entry for logging
-      let automationId: string | null = null;
-      const { data: autoRow } = await supabase
-        .from("automations")
-        .select("id, user_id")
+      // a) Create or get contact
+      let contactId = null;
+      const { data: existingContact } = await supabase
+        .from("contacts")
+        .select("id")
         .eq("account_id", accountId)
-        .limit(1)
+        .eq("phone", formattedPhone)
         .maybeSingle();
 
-      if (autoRow?.id) {
-        automationId = autoRow.id;
-        if (!ownerUserId && autoRow.user_id) {
-          ownerUserId = autoRow.user_id;
-        }
-      } else if (ownerUserId) {
-        const { data: newAuto } = await supabase
-          .from("automations")
-          .insert({
-            account_id: accountId,
-            user_id: ownerUserId,
-            name: "SAFAR Lead Intake Automation",
-            description: "Automated WhatsApp response for new website leads",
-            trigger_type: "lead_captured",
-            is_active: true,
-          })
+      if (existingContact?.id) {
+        contactId = existingContact.id;
+        // update name if blank
+        await supabase.from("contacts").update({ name: name.trim() }).eq("id", contactId);
+      } else {
+        const { data: newContact } = await supabase
+          .from("contacts")
+          .insert({ account_id: accountId, phone: formattedPhone, name: name.trim() })
           .select("id")
           .single();
-
-        if (newAuto?.id) {
-          automationId = newAuto.id;
-        }
+        if (newContact?.id) contactId = newContact.id;
       }
 
-      if (automationId && ownerUserId) {
-        const { data: logEntry, error: logError } = await supabase
-          .from("automation_logs")
-          .insert({
-            automation_id: automationId,
-            account_id: accountId,
-            user_id: ownerUserId,
-            contact_id: null,
-            trigger_event: "lead_captured",
-            status: "success",
-            steps_executed: [
-              {
-                step_type: "send_whatsapp_message",
-                recipient_phone: formattedPhone,
-                category,
+      if (contactId) {
+        // b) Create or get conversation
+        let conversationId = null;
+        const { data: existingConv } = await supabase
+          .from("conversations")
+          .select("id")
+          .eq("account_id", accountId)
+          .eq("contact_id", contactId)
+          .maybeSingle();
+
+        if (existingConv?.id) {
+          conversationId = existingConv.id;
+        } else {
+          const { data: newConv } = await supabase
+            .from("conversations")
+            .insert({ account_id: accountId, contact_id: contactId, status: "open" })
+            .select("id")
+            .single();
+          if (newConv?.id) conversationId = newConv.id;
+        }
+
+        // c) Dispatch lead_captured automation
+        // The automation engine will find the active 'lead_captured' automation for this account,
+        // evaluate any conditions, and execute 'send_message' using context.vars.faq_preview
+        if (conversationId) {
+          await runAutomationsForTrigger({
+            accountId,
+            triggerType: "lead_captured",
+            contactId,
+            context: {
+              conversation_id: conversationId,
+              vars: {
                 faq_preview: faqPreview,
                 lead_id: leadData.id,
-                timestamp: new Date().toISOString(),
-                status: "queued",
-              },
-            ],
-          })
-          .select("id")
-          .single();
-
-        if (!logError && logEntry?.id) {
-          messageId = logEntry.id;
-        } else if (logError) {
-          console.warn("Automation log insertion note:", logError);
+                category: category
+              }
+            }
+          });
         }
       }
     } catch (waErr) {
-      console.warn("Non-fatal WhatsApp trigger logging notice:", waErr);
+      console.warn("Non-fatal WhatsApp trigger logic error:", waErr);
     }
 
     // 7. Return HTTP 200 OK with standardized contract

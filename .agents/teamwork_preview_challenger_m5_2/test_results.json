@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-09-03T19:05:57.884Z",
+  "burstTest": {
+    "count": 10,
+    "durationMs": 2105,
+    "avgLatencyMs": 210.5,
+    "allPassed": true,
+    "dbRecordsVerified": 10,
+    "automationLogsVerified": 10
+  },
+  "heavyBurstTest": {
+    "count": 20,
+    "durationMs": 2393,
+    "avgLatencyMs": 119.7,
+    "passed": true
+  },
+  "dedupSequentialTest": {
+    "phone": "+919876599999",
+    "submissionsCount": 2,
+    "recordsInDb": 2,
+    "behavior": "append_every_lead"
+  },
+  "dedupConcurrentTest": {
+    "phone": "+919876588888",
+    "requestsSent": 5,
+    "successfulResponses": 5,
+    "dbRowsCreated": 5
+  },
+  "schemaConstraintTest": {
+    "allPassed": true
+  },
+  "notesEncodingTest": {
+    "safarGoVerified": true,
+    "safarHomeVerified": true
+  }
+}
