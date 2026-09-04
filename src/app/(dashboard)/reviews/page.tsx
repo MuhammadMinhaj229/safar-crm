@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -38,6 +40,7 @@ import {
   XCircle,
   ChevronLeft,
   ChevronRight,
+  Edit,
 } from "lucide-react";
 
 type Feedback = {
@@ -65,6 +68,11 @@ export default function ReviewsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Feedback | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Feedback | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ customer_name: "", rating: 5, comments: "" });
 
   const fetchReviews = useCallback(async () => {
     setLoading(true);
@@ -141,6 +149,39 @@ export default function ReviewsPage() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const hasNext = page < totalPages - 1;
   const hasPrev = page > 0;
+
+  function openEdit(review: Feedback) {
+    setEditTarget(review);
+    setEditForm({
+      customer_name: review.customer_name || "",
+      rating: review.rating,
+      comments: review.comments || "",
+    });
+    setEditOpen(true);
+  }
+
+  async function handleEditSave() {
+    if (!editTarget) return;
+    setEditing(true);
+    const { error } = await supabase
+      .from("customer_feedback")
+      .update({
+        customer_name: editForm.customer_name,
+        rating: editForm.rating,
+        comments: editForm.comments,
+      })
+      .eq("id", editTarget.id);
+
+    if (error) {
+      toast.error("Failed to update review.");
+    } else {
+      toast.success("Review updated.");
+      fetchReviews();
+      setEditOpen(false);
+      setEditTarget(null);
+    }
+    setEditing(false);
+  }
 
   return (
     <div className="space-y-6">
@@ -289,6 +330,13 @@ export default function ReviewsPage() {
                           <MoreHorizontal className="size-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-popover border-border">
+                          <DropdownMenuItem
+                            onClick={() => openEdit(review)}
+                            className="text-foreground focus:bg-muted"
+                          >
+                            <Edit className="size-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
                           {review.status !== "approved" && (
                             <DropdownMenuItem
                               onClick={() => updateStatus(review.id, "approved")}
@@ -378,6 +426,60 @@ export default function ReviewsPage() {
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
               {deleting && <Loader2 className="size-4 animate-spin" />}
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="bg-popover border-border text-popover-foreground sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-popover-foreground">Edit Review</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Modify the review details before approving.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Customer Name</Label>
+              <Input
+                value={editForm.customer_name}
+                onChange={(e) => setEditForm({ ...editForm, customer_name: e.target.value })}
+                className="bg-card border-border"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Rating (1-5)</Label>
+              <Input
+                type="number"
+                min="1"
+                max="5"
+                value={editForm.rating}
+                onChange={(e) => setEditForm({ ...editForm, rating: parseInt(e.target.value) || 5 })}
+                className="bg-card border-border"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Comments</Label>
+              <Textarea
+                value={editForm.comments}
+                onChange={(e) => setEditForm({ ...editForm, comments: e.target.value })}
+                className="bg-card border-border min-h-[100px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setEditOpen(false)}
+              className="border-border text-muted-foreground hover:bg-muted"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditSave} disabled={editing}>
+              {editing && <Loader2 className="size-4 animate-spin mr-2" />}
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
