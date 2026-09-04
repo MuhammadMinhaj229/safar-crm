@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { createClient } from "@supabase/supabase-js";
 
 function getCorsHeaders(origin: string = "*") {
   return {
@@ -32,7 +32,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = supabaseAdmin();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json(
+        { error: "Configuration error: Missing environment variables." },
+        { status: 500, headers }
+      );
+    }
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // 1. Resolve SAFAR account ID
     const { data: accounts } = await supabase

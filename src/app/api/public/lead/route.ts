@@ -214,8 +214,8 @@ export async function POST(request: Request) {
         // evaluate any conditions, and execute 'send_message' using context.vars.faq_preview
         if (conversationId) {
           await runAutomationsForTrigger({
-            accountId,
-            triggerType: "lead_captured",
+            accountId: accountId as string,
+            triggerType: "lead_captured" as any,
             contactId,
             context: {
               conversation_id: conversationId,
