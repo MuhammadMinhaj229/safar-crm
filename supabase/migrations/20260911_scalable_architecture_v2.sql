@@ -11,22 +11,12 @@ BEGIN
     END IF;
 END $$;
 
--- 2. Create Invoices Table
-CREATE TABLE IF NOT EXISTS public.invoices (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    contact_id UUID REFERENCES public.contacts(id) ON DELETE CASCADE,
-    account_id UUID,
-    user_id UUID,
-    invoice_number VARCHAR(100),
-    invoice_date DATE,
-    total_amount NUMERIC,
-    currency VARCHAR(10),
-    service_code VARCHAR(100),
-    status VARCHAR(50) DEFAULT 'PAID',
-    line_items JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- 2. Extend existing Invoices Table
+ALTER TABLE public.invoices
+ADD COLUMN IF NOT EXISTS user_id UUID,
+ADD COLUMN IF NOT EXISTS invoice_date DATE,
+ADD COLUMN IF NOT EXISTS service_code VARCHAR(100),
+ADD COLUMN IF NOT EXISTS line_items JSONB;
 
 -- RLS Policies for Invoices
 ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
@@ -35,28 +25,29 @@ DROP POLICY IF EXISTS "Users can view their own invoices" ON public.invoices;
 DROP POLICY IF EXISTS "Users can insert their own invoices" ON public.invoices;
 DROP POLICY IF EXISTS "Users can update their own invoices" ON public.invoices;
 DROP POLICY IF EXISTS "Users can delete their own invoices" ON public.invoices;
+DROP POLICY IF EXISTS "Account members can manage invoices" ON public.invoices;
 
 CREATE POLICY "Users can view their own invoices" ON public.invoices
     FOR SELECT USING (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
 CREATE POLICY "Users can insert their own invoices" ON public.invoices
     FOR INSERT WITH CHECK (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
 CREATE POLICY "Users can update their own invoices" ON public.invoices
     FOR UPDATE USING (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
 CREATE POLICY "Users can delete their own invoices" ON public.invoices
     FOR DELETE USING (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
@@ -86,24 +77,24 @@ DROP POLICY IF EXISTS "Users can delete their own payments" ON public.payments;
 
 CREATE POLICY "Users can view their own payments" ON public.payments
     FOR SELECT USING (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
 CREATE POLICY "Users can insert their own payments" ON public.payments
     FOR INSERT WITH CHECK (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
 CREATE POLICY "Users can update their own payments" ON public.payments
     FOR UPDATE USING (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
 
 CREATE POLICY "Users can delete their own payments" ON public.payments
     FOR DELETE USING (
-        account_id IN (SELECT account_id FROM public.profiles WHERE id = auth.uid())
+        account_id IN (SELECT account_id FROM public.profiles WHERE user_id = auth.uid())
         OR user_id = auth.uid()
     );
