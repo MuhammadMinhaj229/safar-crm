@@ -108,43 +108,12 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
     setLoading(true);
 
     const { data } = await supabase
-      .from("contact_notes")
-      .select("id, note_text, created_at")
+      .from("invoices")
+      .select("*")
       .eq("contact_id", contact.id)
-      .ilike("note_text", "%[INVOICE]%")
       .order("created_at", { ascending: false });
 
-    const parsedInvoices = (data ?? []).map((note: any) => {
-      const numMatch = note.note_text.match(/Number:\s*([^\n]+)/);
-      const dateMatch = note.note_text.match(/Date:\s*([^\n]+)/);
-      const totalMatch = note.note_text.match(/Total:\s*([\d.]+)\s*([^\n]+)/);
-      const serviceMatch = note.note_text.match(/Service:\s*([^\n]+)/);
-      const itemsMatch = note.note_text.match(/Items:\n([\s\S]+)/);
-
-      let line_items = null;
-      if (itemsMatch) {
-        line_items = itemsMatch[1].split('\n').filter(Boolean).map((line: string) => {
-          const m = line.match(/- (.*) \(x(\d+)\) = ([\d.]+)/);
-          if (m) return { name: m[1], quantity: parseInt(m[2], 10), unitPrice: 0, total: parseFloat(m[3]) };
-          return { name: line.replace('- ', ''), quantity: 1, unitPrice: 0, total: 0 };
-        });
-      }
-
-      return {
-        id: note.id,
-        invoice_number: numMatch ? numMatch[1].trim() : 'Unknown',
-        invoice_date: dateMatch ? dateMatch[1].trim() : note.created_at,
-        service_code: serviceMatch ? serviceMatch[1].trim() : null,
-        total_amount: totalMatch ? parseFloat(totalMatch[1]) : 0,
-        currency: totalMatch ? totalMatch[2].trim() : 'INR',
-        status: 'PAID', // Invoices in notes are considered finalized/paid
-        created_at: note.created_at,
-        line_items,
-        raw_note: note.note_text
-      } as Invoice;
-    });
-
-    setInvoices(parsedInvoices);
+    setInvoices((data ?? []) as Invoice[]);
 
     // Extract customer ID from notes
     const noteWithId = contact.contact_notes?.find((n) => n.note_text?.includes("Customer ID:"));
@@ -176,7 +145,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleting(true);
-    const { error } = await supabase.from("contact_notes").delete().eq("id", deleteId);
+    const { error } = await supabase.from("invoices").delete().eq("id", deleteId);
     if (error) {
       toast.error("Failed to delete service history");
     } else {
@@ -195,24 +164,37 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
       ? format(new Date(serviceForm.invoice_date), "yyyy-MM-dd") 
       : format(new Date(), "yyyy-MM-dd");
     
-    let noteText = `[INVOICE]\nNumber: ${serviceForm.invoice_number || 'MANUAL'}\nDate: ${formattedDate}\nTotal: ${serviceForm.total_amount || 0} ${serviceForm.currency}\nService: ${serviceForm.service_code || 'Custom Service'}`;
-    
+    let line_items: any[] = [];
     if (serviceForm.itemsText) {
-      noteText += `\nItems:\n`;
       const lines = serviceForm.itemsText.split('\n').filter(Boolean);
       lines.forEach(line => {
         if (line.includes('(x')) {
-           noteText += `- ${line}\n`;
+            const m = line.match(/(.*) \(x(\d+)\) = ([\d.]+)/);
+            if (m) {
+                line_items.push({ name: m[1].trim(), quantity: parseInt(m[2], 10), unitPrice: 0, total: parseFloat(m[3]) });
+            } else {
+                line_items.push({ name: line.trim(), quantity: 1, unitPrice: 0, total: 0 });
+            }
         } else {
-           noteText += `- ${line} (x1) = ${serviceForm.total_amount || 0}\n`;
+           line_items.push({ name: line.trim(), quantity: 1, unitPrice: 0, total: parseFloat(serviceForm.total_amount || "0") });
         }
       });
     }
 
+    const payload = {
+        invoice_number: serviceForm.invoice_number || 'MANUAL',
+        invoice_date: formattedDate,
+        total_amount: parseFloat(serviceForm.total_amount || "0"),
+        currency: serviceForm.currency || 'INR',
+        service_code: serviceForm.service_code || 'Custom Service',
+        line_items,
+        status: 'PAID'
+    };
+
     if (editInvoice) {
       const { error } = await supabase
-        .from("contact_notes")
-        .update({ note_text: noteText })
+        .from("invoices")
+        .update(payload)
         .eq("id", editInvoice.id);
       
       if (error) toast.error("Failed to update service history");
@@ -225,11 +207,11 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
       const { data: userData } = await supabase.auth.getUser();
       const { data: c } = await supabase.from('contacts').select('account_id').eq('id', contact.id).single();
       
-      const { error } = await supabase.from("contact_notes").insert({
+      const { error } = await supabase.from("invoices").insert({
         contact_id: contact.id,
-        note_text: noteText,
         user_id: userData?.user?.id,
-        account_id: c?.account_id
+        account_id: c?.account_id,
+        ...payload
       });
 
       if (error) toast.error("Failed to add service history");
