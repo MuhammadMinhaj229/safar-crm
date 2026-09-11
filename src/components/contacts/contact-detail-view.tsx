@@ -39,6 +39,7 @@ import {
   X,
   DollarSign,
   LayoutTemplate,
+  FileInput,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -616,9 +617,35 @@ export function ContactDetailView({
                         className="rounded-lg bg-muted/50 border border-border/50 p-3 group"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap flex-1">
-                            {note.note_text}
-                          </p>
+                          {note.note_text.startsWith("[INVOICE]") ? (
+                            <div className="w-full flex-1 mr-2 bg-background/50 rounded-md border border-border/60 p-3 shadow-sm">
+                              <div className="flex justify-between items-start mb-1.5">
+                                <span className="font-semibold text-foreground flex items-center gap-1.5 text-sm">
+                                  <FileInput className="size-3.5 text-primary" />
+                                  Invoice {note.note_text.split('\\n').find(l => l.startsWith('Number: '))?.replace('Number: ', '') || ''}
+                                </span>
+                                <span className="text-primary font-medium text-sm">
+                                  {note.note_text.split('\\n').find(l => l.startsWith('Total: '))?.replace('Total: ', '') || ''}
+                                </span>
+                              </div>
+                              <div className="text-xs text-muted-foreground mb-3">
+                                {note.note_text.split('\\n').find(l => l.startsWith('Date: '))?.replace('Date: ', '') || ''}
+                              </div>
+                              <div className="text-xs text-muted-foreground bg-muted/30 rounded p-2 border border-border/30">
+                                {note.note_text.includes('Items:\\n') ? (
+                                  note.note_text.split('Items:\\n')[1].split('\\n').map((item, i) => (
+                                    <div key={i} className="py-0.5">{item}</div>
+                                  ))
+                                ) : (
+                                  <div className="whitespace-pre-wrap">{note.note_text}</div>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap flex-1">
+                              {note.note_text}
+                            </p>
+                          )}
                           <button
                             onClick={() => deleteNote(note.id)}
                             className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all cursor-pointer shrink-0"
