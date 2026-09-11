@@ -20,6 +20,7 @@ export interface Lead {
   name: string;
   phone: string | null;
   email: string | null;
+  location: string;
   service_interest: string | null;
   notes: string | null;
   source: "website" | "whatsapp" | "manual";
@@ -28,20 +29,7 @@ export interface Lead {
   updated_at: string;
 }
 
-const SERVICE_OPTIONS = [
-  "Packing Materials (Boxes, Bags, Scales)",
-  "Home Packing Assistance",
-  "Flight Tickets",
-  "Visa / Document Guidance",
-  "Airport Taxi / Transport",
-  "Homemade Food (Pickles, Spices)",
-  "Family Grocery Delivery (India)",
-  "Home Repair Coordination",
-  "Gift Sourcing",
-  "Medical Coordination",
-  "Local Delivery / Errands",
-  "Other",
-];
+import { SAFAR_SERVICES as SERVICE_OPTIONS } from "@/lib/safar-services";
 
 interface LeadFormProps {
   open: boolean;
@@ -57,6 +45,7 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
   const [serviceInterest, setServiceInterest] = useState("");
   const [notes, setNotes] = useState("");
   const [source, setSource] = useState<Lead["source"]>("manual");
@@ -67,6 +56,7 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
       setName(lead.name);
       setPhone(lead.phone ?? "");
       setEmail(lead.email ?? "");
+      setLocation(lead.location ?? "Unknown");
       setServiceInterest(lead.service_interest ?? "");
       setNotes(lead.notes ?? "");
       setSource(lead.source);
@@ -75,6 +65,7 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
       setName("");
       setPhone("");
       setEmail("");
+      setLocation("");
       setServiceInterest("");
       setNotes("");
       setSource("manual");
@@ -94,7 +85,7 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
         phone: phone.trim() || null,
         email: email.trim() || null,
         service_interest: serviceInterest || null,
-        notes: notes.trim() || null,
+        notes: `Location: ${location.trim() || 'Unknown'}\n${notes.trim()}`.trim() || null,
         source,
         status,
       };
@@ -103,15 +94,14 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
       if (lead) {
         ({ error } = await supabase.from("leads").update(payload).eq("id", lead.id));
       } else {
-        // Get account_id from the current user's account
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { toast.error("Not authenticated."); return; }
         const { data: member } = await supabase
-          .from("account_members")
+          .from("profiles")
           .select("account_id")
-          .eq("profile_id", user.id)
+          .eq("user_id", user.id)
           .single();
-        if (!member) { toast.error("Account not found."); return; }
+        if (!member || !member.account_id) { toast.error("Account not found."); return; }
         ({ error } = await supabase.from("leads").insert([{ ...payload, account_id: member.account_id }]));
       }
 
@@ -133,7 +123,7 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-popover border-border text-popover-foreground sm:max-w-lg">
+      <DialogContent className="bg-popover border-border text-popover-foreground w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-popover-foreground text-lg font-bold">
             {lead ? "Edit Lead" : "Add New Lead"}
@@ -175,6 +165,18 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
             />
           </div>
 
+          {/* Location */}
+          <div>
+            <label className={labelClass}>Exact Location / Address *</label>
+            <Input
+              className={inputClass}
+              placeholder="e.g. Dubai Marina, UAE"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+            />
+          </div>
+
           {/* Service Interest */}
           <div>
             <label className={labelClass}>Service Interest</label>
@@ -191,7 +193,7 @@ export function LeadForm({ open, onOpenChange, lead, onSaved }: LeadFormProps) {
           </div>
 
           {/* Source + Status side-by-side */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={labelClass}>Source</label>
               <select

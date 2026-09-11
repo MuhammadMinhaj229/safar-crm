@@ -45,12 +45,20 @@ import {
 
 type Feedback = {
   id: string;
+  service_request_id: string | null;
   customer_name: string | null;
   rating: number;
   comments: string | null;
   status: string;
   is_public: boolean;
   created_at: string;
+  service_requests?: {
+    request_id: string;
+    contacts?: {
+      safar_customer_id: string;
+      name: string;
+    } | null;
+  } | null;
 };
 
 const PAGE_SIZE = 25;
@@ -82,7 +90,7 @@ export default function ReviewsPage() {
 
     let query = supabase
       .from("customer_feedback")
-      .select("*", { count: "exact" })
+      .select("*, service_requests(request_id, contacts(safar_customer_id, name))", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -242,6 +250,7 @@ export default function ReviewsPage() {
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
               <TableHead className="text-muted-foreground">Customer</TableHead>
+              <TableHead className="text-muted-foreground">Request ID</TableHead>
               <TableHead className="text-muted-foreground">Rating</TableHead>
               <TableHead className="text-muted-foreground hidden md:table-cell">Comments</TableHead>
               <TableHead className="text-muted-foreground">Status</TableHead>
@@ -261,7 +270,7 @@ export default function ReviewsPage() {
               </TableRow>
             ) : reviews.length === 0 ? (
               <TableRow className="border-border">
-                <TableCell colSpan={6} className="text-center py-12">
+                <TableCell colSpan={7} className="text-center py-12">
                   <div className="flex flex-col items-center gap-2">
                     <Star className="size-8 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
@@ -277,7 +286,21 @@ export default function ReviewsPage() {
                 return (
                   <TableRow key={review.id} className="border-border hover:bg-muted/50">
                     <TableCell className="font-medium text-foreground">
-                      {review.customer_name || "Anonymous"}
+                      {review.service_requests?.contacts?.name || review.customer_name || "Anonymous"}
+                      {review.service_requests?.contacts?.safar_customer_id && (
+                        <div className="text-xs text-muted-foreground">
+                          {review.service_requests.contacts.safar_customer_id}
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {review.service_requests?.request_id ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-400">
+                          {review.service_requests.request_id}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">

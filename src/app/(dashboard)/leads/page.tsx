@@ -182,25 +182,57 @@ export default function LeadsPage() {
     if (!convertTarget) return;
     setConverting(true);
     try {
-      // Get current user's account_id
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { data: member } = await supabase
-        .from("account_members")
-        .select("account_id")
-        .eq("profile_id", user.id)
-        .single();
-      if (!member) throw new Error("Account not found");
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Not logged in");
 
-      // Insert into contacts table
-      const { error: contactError } = await supabase.from("contacts").insert([{
-        account_id: member.account_id,
+      // Get account_id
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("account_id")
+        .eq("user_id", userData.user.id)
+        .single();
+      
+      const accountId = profile?.account_id;
+      if (!accountId) throw new Error("Account not found");
+
+      // 1. Insert into contacts (DB trigger will automatically assign safar_customer_id)
+      const { data: newContact, error: contactError } = await supabase.from("contacts").insert([{
+        user_id: userData.user.id,
+        account_id: accountId,
         name: convertTarget.name,
-        phone: convertTarget.phone ?? "",
+        phone: convertTarget.phone ?? "0000000000",
         email: convertTarget.email ?? null,
-        notes: `Converted from lead. Service interest: ${convertTarget.service_interest ?? "N/A"}. ${convertTarget.notes ?? ""}`.trim(),
+      }]).select("id, safar_customer_id").single();
+      
+      if (contactError || !newContact) throw contactError || new Error("Failed to create contact");
+
+      // 2. Save basic info in contact notes
+      await supabase.from("contact_notes").insert([{
+        user_id: userData.user.id,
+        account_id: accountId,
+        contact_id: newContact.id,
+        note_text: `Customer ID: ${newContact.safar_customer_id}\nLocation: ${convertTarget.location || 'Unknown'}\nService Interest: ${convertTarget.service_interest || 'None'}`
       }]);
-      if (contactError) throw contactError;
+
+      // Spawn a service request if there is a service interest
+      if (convertTarget.service_interest) {
+        const smSrvSuffix = Math.floor(100000 + Math.random() * 900000);
+        const reqId = `SMSRV-${smSrvSuffix}`;
+        await supabase.from("service_requests").insert([{
+          user_id: userData.user.id,
+          contact_id: newContact.id,
+          request_id: reqId,
+          status: "triage",
+          notepad_content: {
+            invoice_details: {
+              service_name: convertTarget.service_interest,
+              rate: 0,
+              quantity: 1,
+              total: 0
+            }
+          }
+        }]);
+      }
 
       // Update lead status to converted
       await supabase

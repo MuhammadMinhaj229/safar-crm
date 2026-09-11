@@ -24,8 +24,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Check, Info, Loader2, User, AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { SAFAR_SERVICES as SERVICE_OPTIONS } from "@/lib/safar-services";
 
 interface ContactFormProps {
   open: boolean;
@@ -55,6 +56,8 @@ export function ContactForm({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
+  const [location, setLocation] = useState('');
+  const [serviceInterest, setServiceInterest] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Duplicate-phone detection for NEW contacts. `exact` (same digits)
@@ -76,6 +79,8 @@ export function ContactForm({
       setPhone(contact?.phone ?? '');
       setEmail(contact?.email ?? '');
       setCompany(contact?.company ?? '');
+      setLocation('');
+      setServiceInterest('');
       setSelectedTagIds(contactTags.map((ct) => ct.tag_id));
       setDupMatch(null);
       fetchTags();
@@ -162,6 +167,22 @@ export function ContactForm({
           .eq('id', contactId);
         if (error) throw error;
       } else {
+        const { data: notesData } = await supabase
+          .from('contact_notes')
+          .select('note_text')
+          .ilike('note_text', '%Customer ID: CUS_SNM-%')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        let nextSeq = 1;
+        if (notesData && notesData.length > 0) {
+          const match = notesData[0].note_text.match(/CUS_SNM-(\d+)/);
+          if (match) {
+            nextSeq = parseInt(match[1], 10) + 1;
+          }
+        }
+        const safarCustomerId = `CUS_SNM-${String(nextSeq).padStart(6, '0')}`;
+
         const { data, error } = await supabase
           .from('contacts')
           .insert({
@@ -176,6 +197,16 @@ export function ContactForm({
           .single();
         if (error) throw error;
         contactId = data.id;
+
+        // Store safar_customer_id in contact_notes for now
+        if (location.trim() || serviceInterest.trim() || safarCustomerId) {
+          await supabase.from('contact_notes').insert({
+            user_id: user.id,
+            account_id: accountId,
+            contact_id: contactId,
+            note_text: `Customer ID: ${safarCustomerId}\nLocation: ${location.trim() || 'Unknown'}\nService Interest: ${serviceInterest.trim() || 'None'}`
+          });
+        }
       }
 
       // Sync tags
@@ -321,6 +352,36 @@ export function ContactForm({
               placeholder={t('companyPlaceholder')}
               className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cf-location" className="text-muted-foreground">
+              Location / Address *
+            </Label>
+            <Input
+              id="cf-location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Dubai Marina, UAE"
+              className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cf-service" className="text-muted-foreground">
+              Service Interest
+            </Label>
+            <select
+              id="cf-service"
+              className="w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              value={serviceInterest}
+              onChange={(e) => setServiceInterest(e.target.value)}
+            >
+              <option value="">Select a service...</option>
+              {SERVICE_OPTIONS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">

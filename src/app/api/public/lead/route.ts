@@ -213,7 +213,8 @@ export async function POST(request: Request) {
         // The automation engine will find the active 'lead_captured' automation for this account,
         // evaluate any conditions, and execute 'send_message' using context.vars.faq_preview
         if (conversationId) {
-          await runAutomationsForTrigger({
+          // Fire and forget to prevent blocking the website response
+          runAutomationsForTrigger({
             accountId: accountId as string,
             triggerType: "lead_captured" as any,
             contactId,
@@ -225,7 +226,7 @@ export async function POST(request: Request) {
                 category: category
               }
             }
-          });
+          }).catch((err) => console.error("Async WA trigger error:", err));
         }
       }
     } catch (waErr) {

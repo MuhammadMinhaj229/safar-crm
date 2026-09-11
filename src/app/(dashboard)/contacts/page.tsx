@@ -54,6 +54,7 @@ import { ContactForm } from '@/components/contacts/contact-form';
 import { ContactDetailView } from '@/components/contacts/contact-detail-view';
 import { ImportModal } from '@/components/contacts/import-modal';
 import { CustomFieldsManager } from '@/components/contacts/custom-fields-manager';
+import { CustomerDirectory } from '@/components/contacts/CustomerDirectory';
 import { useCan } from '@/hooks/use-can';
 import { GatedButton } from '@/components/ui/gated-button';
 import { useTranslations } from 'next-intl';
@@ -89,6 +90,10 @@ export default function ContactsPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Customer Directory (service history panel)
+  const [directoryOpen, setDirectoryOpen] = useState(false);
+  const [directoryContact, setDirectoryContact] = useState<ContactWithTags | null>(null);
 
   // Bulk selection (page-scoped — only the loaded rows are selectable)
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -156,7 +161,7 @@ export default function ContactsPage() {
     } else {
       let query = supabase
         .from('contacts')
-        .select('*', { count: 'exact' })
+        .select('*, contact_notes(note_text)', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -541,6 +546,7 @@ export default function ContactsPage() {
                   aria-label="Select all contacts on this page"
                 />
               </TableHead>
+              <TableHead className="text-muted-foreground w-32">Customer ID</TableHead>
               <TableHead className="text-muted-foreground">{t('tableColumns.name')}</TableHead>
               <TableHead className="text-muted-foreground">{t('tableColumns.phone')}</TableHead>
               <TableHead className="text-muted-foreground hidden md:table-cell">{t('tableColumns.email')}</TableHead>
@@ -591,7 +597,10 @@ export default function ContactsPage() {
                 <TableRow
                   key={contact.id}
                   className="border-border hover:bg-muted/50 cursor-pointer"
-                  onClick={() => openDetail(contact.id)}
+                  onClick={() => {
+                    setDirectoryContact(contact);
+                    setDirectoryOpen(true);
+                  }}
                 >
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox
@@ -600,8 +609,24 @@ export default function ContactsPage() {
                       aria-label={`Select ${contact.name || contact.phone}`}
                     />
                   </TableCell>
-                  <TableCell className="text-foreground font-medium">
-                    {contact.name || <span className="text-muted-foreground italic">{t('unnamed')}</span>}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => {
+                        setDirectoryContact(contact);
+                        setDirectoryOpen(true);
+                      }}
+                      title="View customer service history"
+                      className="font-mono text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-md hover:bg-primary/20 hover:scale-105 transition-all cursor-pointer border border-primary/20"
+                    >
+                      {contact.safar_customer_id ||
+                       (contact as any).contact_notes?.find((n: any) => n.note_text?.includes('Customer ID:'))?.note_text?.match(/Customer ID:\s*(CUS_SNM-\d+)/)?.[1] || 
+                       'PENDING'}
+                    </button>
+                  </TableCell>
+                  <TableCell className="font-medium text-foreground">
+                    <div className="flex items-center gap-2">
+                      {contact.name || <span className="text-muted-foreground italic">{t('unnamed')}</span>}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground font-mono text-xs">
                     {contact.phone}
@@ -827,6 +852,12 @@ export default function ContactsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Customer Directory — full service history slide-over */}
+      <CustomerDirectory
+        open={directoryOpen}
+        onOpenChange={setDirectoryOpen}
+        contact={directoryContact as any}
+      />
     </div>
   );
 }

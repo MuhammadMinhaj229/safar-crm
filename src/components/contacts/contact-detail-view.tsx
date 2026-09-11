@@ -93,9 +93,9 @@ export function ContactDetailView({
   const [savingCustom, setSavingCustom] = useState(false);
   const [loadingCustom, setLoadingCustom] = useState(false);
 
-  // Deals tab
-  const [deals, setDeals] = useState<Deal[]>([]);
-  const [loadingDeals, setLoadingDeals] = useState(false);
+  // Requests tab
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
 
   const fetchContact = useCallback(async () => {
     if (!contactId) return;
@@ -168,16 +168,16 @@ export function ContactDetailView({
     setLoadingCustom(false);
   }, [contactId, supabase]);
 
-  const fetchDeals = useCallback(async () => {
+  const fetchRequests = useCallback(async () => {
     if (!contactId) return;
-    setLoadingDeals(true);
+    setLoadingRequests(true);
     const { data } = await supabase
-      .from('deals')
-      .select('*, stage:pipeline_stages(*)')
+      .from('service_requests')
+      .select('*')
       .eq('contact_id', contactId)
       .order('created_at', { ascending: false });
-    setDeals((data ?? []) as Deal[]);
-    setLoadingDeals(false);
+    setRequests(data ?? []);
+    setLoadingRequests(false);
   }, [contactId, supabase]);
 
   useEffect(() => {
@@ -186,9 +186,9 @@ export function ContactDetailView({
       fetchTags();
       fetchNotes();
       fetchCustomFields();
-      fetchDeals();
+      fetchRequests();
     }
-  }, [open, contactId, fetchContact, fetchTags, fetchNotes, fetchCustomFields, fetchDeals]);
+  }, [open, contactId, fetchContact, fetchTags, fetchNotes, fetchCustomFields, fetchRequests]);
 
   async function copyPhone() {
     if (!contact) return;
@@ -477,10 +477,10 @@ export function ContactDetailView({
                   {t('tabs.custom')}
                 </TabsTrigger>
                 <TabsTrigger
-                  value="deals"
+                  value="requests"
                   className="data-active:bg-muted data-active:text-primary text-muted-foreground"
                 >
-                  {t('tabs.deals')}
+                  Service Requests
                 </TabsTrigger>
               </TabsList>
 
@@ -688,57 +688,52 @@ export function ContactDetailView({
                 )}
               </TabsContent>
 
-              {/* Deals Tab */}
-              <TabsContent value="deals" className="flex-1 overflow-y-auto px-4 py-3">
-                {loadingDeals ? (
+              {/* Requests Tab */}
+              <TabsContent value="requests" className="flex-1 overflow-y-auto px-4 py-3">
+                {loadingRequests ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="size-5 animate-spin text-primary" />
                   </div>
-                ) : deals.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">{t('dealsTab.noDeals')}</p>
+                ) : requests.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No service requests found for this customer.</p>
                 ) : (
-                  <div className="space-y-2">
-                    {deals.map((deal) => (
+                  <div className="space-y-4">
+                    {requests.map((req) => (
                       <div
-                        key={deal.id}
-                        className="rounded-lg border border-border bg-muted/50 p-3"
+                        key={req.id}
+                        className="rounded-lg border border-border bg-card p-4 space-y-3"
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm font-medium text-foreground">
-                            {deal.title}
-                          </p>
-                          {deal.stage && (
-                            <span
-                              className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
-                              style={{
-                                backgroundColor: `${deal.stage.color}20`,
-                                color: deal.stage.color,
-                              }}
-                            >
-                              {deal.stage.name}
-                            </span>
-                          )}
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                          <div>
+                            <h4 className="text-sm font-semibold text-foreground">
+                              Request: {req.request_id || req.id.slice(0, 8)}
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {new Date(req.created_at).toLocaleDateString()} • Status: <span className="text-primary font-medium">{req.status}</span>
+                            </p>
+                          </div>
+                          
+                          {/* Navigate to Generate Invoice if no invoice exists (simplified for now) */}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                            onClick={() => window.open(`http://localhost:3001/?requestId=${req.request_id}`, '_blank')}
+                          >
+                            Generate Invoice
+                          </Button>
                         </div>
-                        <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <DollarSign className="size-3" />
-                            {formatCurrency(
-                              deal.value ?? 0,
-                              deal.currency || defaultCurrency,
-                            )}
-                          </span>
-                          {deal.status && deal.status !== 'open' && (
-                            <span
-                              className={
-                                deal.status === 'won'
-                                  ? 'text-primary'
-                                  : 'text-red-400'
-                              }
-                            >
-                              {deal.status}
-                            </span>
-                          )}
-                        </div>
+
+                        {req.notepad_content && (
+                          <div className="bg-muted rounded p-3 text-xs text-foreground font-mono whitespace-pre-wrap">
+                            {req.notepad_content.services ? 
+                              req.notepad_content.services.map((s: string, i: number) => (
+                                <div key={i}>• {s}</div>
+                              ))
+                              : JSON.stringify(req.notepad_content)
+                            }
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
