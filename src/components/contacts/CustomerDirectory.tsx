@@ -9,6 +9,8 @@ import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 interface Invoice {
@@ -65,8 +67,41 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
   const [deleting, setDeleting] = useState(false);
 
   const [editInvoice, setEditInvoice] = useState<Invoice | null>(null);
-  const [editNoteText, setEditNoteText] = useState("");
+  const [serviceFormOpen, setServiceFormOpen] = useState(false);
+  const [serviceForm, setServiceForm] = useState({
+    invoice_number: "",
+    invoice_date: format(new Date(), "yyyy-MM-dd"),
+    service_code: "",
+    total_amount: "",
+    currency: "INR",
+    itemsText: ""
+  });
   const [savingEdit, setSavingEdit] = useState(false);
+
+  const openServiceForm = (inv?: Invoice) => {
+    if (inv) {
+      setEditInvoice(inv);
+      setServiceForm({
+        invoice_number: inv.invoice_number === 'Unknown' ? '' : inv.invoice_number,
+        invoice_date: inv.invoice_date || format(new Date(), "yyyy-MM-dd"),
+        service_code: inv.service_code || "",
+        total_amount: String(inv.total_amount || ""),
+        currency: inv.currency || "INR",
+        itemsText: inv.line_items?.map(i => `${i.name} (x${i.quantity}) = ${i.total}`).join('\n') || ""
+      });
+    } else {
+      setEditInvoice(null);
+      setServiceForm({
+        invoice_number: `MANUAL-${Math.floor(Math.random()*10000)}`,
+        invoice_date: format(new Date(), "yyyy-MM-dd"),
+        service_code: "",
+        total_amount: "",
+        currency: "INR",
+        itemsText: ""
+      });
+    }
+    setServiceFormOpen(true);
+  };
 
   const fetchInvoices = useCallback(async () => {
     if (!contact) return;
@@ -152,20 +187,57 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
     setDeleteId(null);
   };
 
-  const handleEditSave = async () => {
-    if (!editInvoice || !editNoteText.trim()) return;
+  const handleSaveService = async () => {
+    if (!contact) return;
     setSavingEdit(true);
-    const { error } = await supabase
-      .from("contact_notes")
-      .update({ note_text: editNoteText.trim() })
-      .eq("id", editInvoice.id);
+
+    const formattedDate = serviceForm.invoice_date 
+      ? format(new Date(serviceForm.invoice_date), "yyyy-MM-dd") 
+      : format(new Date(), "yyyy-MM-dd");
     
-    if (error) {
-      toast.error("Failed to update service history");
+    let noteText = `[INVOICE]\nNumber: ${serviceForm.invoice_number || 'MANUAL'}\nDate: ${formattedDate}\nTotal: ${serviceForm.total_amount || 0} ${serviceForm.currency}\nService: ${serviceForm.service_code || 'Custom Service'}`;
+    
+    if (serviceForm.itemsText) {
+      noteText += `\nItems:\n`;
+      const lines = serviceForm.itemsText.split('\n').filter(Boolean);
+      lines.forEach(line => {
+        if (line.includes('(x')) {
+           noteText += `- ${line}\n`;
+        } else {
+           noteText += `- ${line} (x1) = ${serviceForm.total_amount || 0}\n`;
+        }
+      });
+    }
+
+    if (editInvoice) {
+      const { error } = await supabase
+        .from("contact_notes")
+        .update({ note_text: noteText })
+        .eq("id", editInvoice.id);
+      
+      if (error) toast.error("Failed to update service history");
+      else {
+        toast.success("Service history updated");
+        fetchInvoices();
+        setServiceFormOpen(false);
+      }
     } else {
-      toast.success("Service history updated");
-      fetchInvoices();
-      setEditInvoice(null);
+      const { data: userData } = await supabase.auth.getUser();
+      const { data: c } = await supabase.from('contacts').select('account_id').eq('id', contact.id).single();
+      
+      const { error } = await supabase.from("contact_notes").insert({
+        contact_id: contact.id,
+        note_text: noteText,
+        user_id: userData?.user?.id,
+        account_id: c?.account_id
+      });
+
+      if (error) toast.error("Failed to add service history");
+      else {
+        toast.success("Service history added");
+        fetchInvoices();
+        setServiceFormOpen(false);
+      }
     }
     setSavingEdit(false);
   };
@@ -245,10 +317,15 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
 
         {/* Invoice History */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Package className="size-4 text-primary" />
-            Service History
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
+              <Package className="size-4 text-primary" />
+              Service History
+            </h3>
+            <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => openServiceForm()}>
+              Add Service
+            </Button>
+          </div>
 
           {loading ? (
             <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
@@ -276,10 +353,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
                   index={idx} 
                   formatDate={formatDate} 
                   onDelete={() => setDeleteId(inv.id)}
-                  onEdit={() => {
-                    setEditInvoice(inv);
-                    setEditNoteText(inv.raw_note);
-                  }}
+                  onEdit={() => openServiceForm(inv)}
                 />
               ))}
             </div>
@@ -309,28 +383,47 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
       </DialogContent>
     </Dialog>
 
-    {/* Edit Dialog */}
-    <Dialog open={!!editInvoice} onOpenChange={(o) => !o && setEditInvoice(null)}>
+    {/* Service Form Dialog */}
+    <Dialog open={serviceFormOpen} onOpenChange={(o) => !o && setServiceFormOpen(false)}>
       <DialogContent className="sm:max-w-lg bg-background border-border">
         <DialogHeader>
-          <DialogTitle>Edit Service History</DialogTitle>
+          <DialogTitle>{editInvoice ? "Edit Service History" : "Add Service History"}</DialogTitle>
         </DialogHeader>
-        <div className="py-4">
-          <Textarea 
-            value={editNoteText}
-            onChange={(e) => setEditNoteText(e.target.value)}
-            className="min-h-[200px] font-mono text-xs bg-muted/50 border-border"
-            placeholder="Edit invoice raw text here..."
-          />
-          <p className="text-xs text-muted-foreground mt-2">
-            Carefully edit the values (e.g. Total, Items). Do not change the [INVOICE] tag.
-          </p>
+        <div className="py-4 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <Input type="date" value={serviceForm.invoice_date} onChange={(e) => setServiceForm({...serviceForm, invoice_date: e.target.value})} />
+            </div>
+            <div className="space-y-2">
+              <Label>Invoice/Ref Number</Label>
+              <Input value={serviceForm.invoice_number} onChange={(e) => setServiceForm({...serviceForm, invoice_number: e.target.value})} />
+            </div>
+            <div className="space-y-2">
+              <Label>Total Amount</Label>
+              <Input type="number" value={serviceForm.total_amount} onChange={(e) => setServiceForm({...serviceForm, total_amount: e.target.value})} />
+            </div>
+            <div className="space-y-2">
+              <Label>Service Code / Name</Label>
+              <Input value={serviceForm.service_code} onChange={(e) => setServiceForm({...serviceForm, service_code: e.target.value})} />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Line Items (Optional)</Label>
+            <Textarea 
+              value={serviceForm.itemsText}
+              onChange={(e) => setServiceForm({...serviceForm, itemsText: e.target.value})}
+              className="min-h-[100px] bg-muted/50 border-border"
+              placeholder="e.g. Flight Booking"
+            />
+            <p className="text-xs text-muted-foreground">Each line will be saved as a separate item.</p>
+          </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setEditInvoice(null)} disabled={savingEdit}>
+          <Button variant="outline" onClick={() => setServiceFormOpen(false)} disabled={savingEdit}>
             Cancel
           </Button>
-          <Button onClick={handleEditSave} disabled={savingEdit}>
+          <Button onClick={handleSaveService} disabled={savingEdit}>
             {savingEdit ? <Loader2 className="size-4 animate-spin mr-2" /> : <Save className="size-4 mr-2" />}
             Save Changes
           </Button>
