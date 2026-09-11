@@ -100,7 +100,6 @@ const navItems: NavItem[] = [
   { href: "/reviews", labelKey: "reviews", icon: Star },
   { href: "/contacts", labelKey: "contacts", icon: Users },
   { href: "/requests", labelKey: "Vendors & Partners", icon: UsersRound },
-  { href: "/invoices", labelKey: "New Invoice", icon: FileText },
   { href: "/pipelines", labelKey: "pipelines", icon: GitBranch },
   { href: "/broadcasts", labelKey: "broadcasts", icon: Radio },
   { href: "/automations", labelKey: "automations", icon: Zap },

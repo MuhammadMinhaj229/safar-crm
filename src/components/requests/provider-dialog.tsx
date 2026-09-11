@@ -41,7 +41,6 @@ export function ProviderDialog({ open, onOpenChange, categoryId, provider, onSav
 
     setLoading(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
       const payload = {
         name: name.trim(),
         phone: phone.trim() || null,
@@ -53,18 +52,22 @@ export function ProviderDialog({ open, onOpenChange, categoryId, provider, onSav
 
       let res;
       if (provider) {
-        res = await supabase.from('safar_service_providers').update(payload).eq('id', provider.id).select().single();
+        const { data, error } = await supabase.from('safar_service_providers').update(payload).eq('id', provider.id).select();
+        if (error) throw error;
+        res = data?.[0] || { ...payload, id: provider.id };
       } else {
-        res = await supabase.from('safar_service_providers').insert({ ...payload, user_id: userData?.user?.id }).select().single();
+        const authUser = await supabase.auth.getUser();
+        const insertPayload = { ...payload, user_id: authUser.data.user?.id };
+        const { data, error } = await supabase.from('safar_service_providers').insert(insertPayload).select();
+        if (error) throw error;
+        res = data?.[0] || { ...insertPayload, id: crypto.randomUUID() };
       }
 
-      if (res.error) throw res.error;
-
       toast.success(provider ? "Provider updated" : "Provider added");
-      onSave(res.data);
+      onSave(res);
       onOpenChange(false);
     } catch (error: any) {
-      console.error(error);
+      console.error("Save provider error:", error);
       toast.error(error.message || "Failed to save provider");
     } finally {
       setLoading(false);
