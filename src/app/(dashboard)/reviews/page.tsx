@@ -41,6 +41,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Edit,
+  Plus,
 } from "lucide-react";
 
 type Feedback = {
@@ -81,6 +82,10 @@ export default function ReviewsPage() {
   const [editTarget, setEditTarget] = useState<Feedback | null>(null);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ customer_name: "", rating: 5, comments: "" });
+
+  const [addOpen, setAddOpen] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [addForm, setAddForm] = useState({ customer_name: "", rating: 5, comments: "", status: "approved" });
 
   const fetchReviews = useCallback(async () => {
     setLoading(true);
@@ -191,6 +196,28 @@ export default function ReviewsPage() {
     setEditing(false);
   }
 
+  async function handleAddSave() {
+    setAdding(true);
+    const { error } = await supabase
+      .from("customer_feedback")
+      .insert({
+        customer_name: addForm.customer_name,
+        rating: addForm.rating,
+        comments: addForm.comments,
+        status: addForm.status,
+      });
+
+    if (error) {
+      toast.error("Failed to add review.");
+    } else {
+      toast.success("Review added.");
+      fetchReviews();
+      setAddOpen(false);
+      setAddForm({ customer_name: "", rating: 5, comments: "", status: "approved" });
+    }
+    setAdding(false);
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -206,6 +233,10 @@ export default function ReviewsPage() {
               : "No reviews yet. Share your feedback link!"}
           </p>
         </div>
+        <Button onClick={() => setAddOpen(true)} className="w-full sm:w-auto">
+          <Plus className="size-4 mr-2" />
+          Add Review
+        </Button>
       </div>
 
       {/* Stats bar */}
@@ -503,6 +534,71 @@ export default function ReviewsPage() {
             <Button onClick={handleEditSave} disabled={editing}>
               {editing && <Loader2 className="size-4 animate-spin mr-2" />}
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Add Dialog */}
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent className="bg-popover border-border text-popover-foreground sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-popover-foreground">Add Review</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Manually add a customer review.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Customer Name</Label>
+              <Input
+                value={addForm.customer_name}
+                onChange={(e) => setAddForm({ ...addForm, customer_name: e.target.value })}
+                className="bg-card border-border"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Rating (1-5)</Label>
+              <Input
+                type="number"
+                min="1"
+                max="5"
+                value={addForm.rating}
+                onChange={(e) => setAddForm({ ...addForm, rating: parseInt(e.target.value) || 5 })}
+                className="bg-card border-border"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Comments</Label>
+              <Textarea
+                value={addForm.comments}
+                onChange={(e) => setAddForm({ ...addForm, comments: e.target.value })}
+                className="bg-card border-border min-h-[100px]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <select
+                value={addForm.status}
+                onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAddOpen(false)}
+              className="border-border text-muted-foreground hover:bg-muted"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleAddSave} disabled={adding}>
+              {adding && <Loader2 className="size-4 animate-spin mr-2" />}
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
