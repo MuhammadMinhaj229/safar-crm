@@ -98,6 +98,7 @@ const navItems: NavItem[] = [
   { href: "/reviews", labelKey: "reviews", icon: Star },
   { href: "/contacts", labelKey: "contacts", icon: Users },
   { href: "/requests", labelKey: "Vendors & Partners", icon: UsersRound },
+  { href: "/tools", labelKey: "Tools", icon: Zap },
 ];
 
 const bottomNavItems = [
