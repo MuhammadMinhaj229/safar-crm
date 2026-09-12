@@ -162,6 +162,7 @@ export function ContactForm({
             phone: phone.trim(),
             email: email.trim() || null,
             company: company.trim() || null,
+            location: location.trim() || 'Unknown',
             updated_at: new Date().toISOString(),
           })
           .eq('id', contactId);
@@ -192,6 +193,7 @@ export function ContactForm({
             phone: phone.trim(),
             email: email.trim() || null,
             company: company.trim() || null,
+            location: location.trim() || 'Unknown',
           })
           .select('id')
           .single();

@@ -135,7 +135,8 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
     .filter((i) => i.status === "PAID")
     .reduce((sum, i) => sum + (i.total_amount ?? 0), 0);
 
-  const location = contact?.location || contact?.contact_notes?.find(
+  const dbLoc = contact?.location;
+  const location = (dbLoc && dbLoc !== 'Unknown') ? dbLoc : contact?.contact_notes?.find(
     (n) => n.note_text?.includes("Location:")
   )?.note_text?.match(/Location:\s*(.+)/)?.[1]?.trim();
 
@@ -266,7 +267,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
                 {contact.email}
               </span>
             )}
-            {location && (
+            {location && location !== 'Unknown' && (
               <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="size-3.5" />
                 {location}
