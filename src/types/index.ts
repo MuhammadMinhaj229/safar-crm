@@ -109,6 +109,7 @@ export interface Contact {
   email?: string;
   company?: string;
   avatar_url?: string;
+  location?: string;
   created_at: string;
   updated_at: string;
   /** Hydrated by queries that embed `contact_tags(tags(*))` (e.g. the
