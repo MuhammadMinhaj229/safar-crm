@@ -94,17 +94,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: "/dashboard", labelKey: "dashboard", icon: LayoutDashboard },
-  { href: "/inbox", labelKey: "inbox", icon: MessageSquare },
-  { href: "/notifications", labelKey: "notifications", icon: Bell },
   { href: "/leads", labelKey: "leads", icon: TrendingUp },
   { href: "/reviews", labelKey: "reviews", icon: Star },
   { href: "/contacts", labelKey: "contacts", icon: Users },
   { href: "/requests", labelKey: "Vendors & Partners", icon: UsersRound },
-  { href: "/pipelines", labelKey: "pipelines", icon: GitBranch },
-  { href: "/broadcasts", labelKey: "broadcasts", icon: Radio },
-  { href: "/automations", labelKey: "automations", icon: Zap },
-  { href: "/flows", labelKey: "flows", icon: Workflow, beta: true },
-  { href: "/agents", labelKey: "aiAgents", icon: Bot },
 ];
 
 const bottomNavItems = [
