@@ -6,7 +6,8 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ServiceCategoryPage({ params }: { params: { id: string } }) {
+export default async function ServiceCategoryPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -18,7 +19,7 @@ export default async function ServiceCategoryPage({ params }: { params: { id: st
   const { data: category } = await supabase
     .from('safar_service_categories')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!category) {
