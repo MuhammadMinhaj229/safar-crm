@@ -97,8 +97,8 @@ const navItems: NavItem[] = [
   { href: "/leads", labelKey: "leads", icon: TrendingUp },
   { href: "/reviews", labelKey: "reviews", icon: Star },
   { href: "/contacts", labelKey: "contacts", icon: Users },
-  { href: "/requests", labelKey: "Vendors & Partners", icon: UsersRound },
-  { href: "/tools", labelKey: "Tools", icon: Zap },
+  { href: "/requests", labelKey: "requests", icon: UsersRound },
+  { href: "/tools", labelKey: "tools", icon: Zap },
 ];
 
 const bottomNavItems = [
