@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ArrowUpRight, Zap } from "lucide-react";
+import { ArrowUpRight, Zap, Share2, BarChart } from "lucide-react";
 import Link from "next/link";
 
 export default function ToolsPage() {
@@ -36,7 +36,49 @@ export default function ToolsPage() {
             </Card>
           </Link>
           
-          {/* Future tools can go here */}
+          <Link href="#" target="_blank" rel="noopener noreferrer" className="group">
+            <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md bg-card/50 hover:bg-card">
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500">
+                    <Share2 className="size-5" />
+                  </div>
+                  <ArrowUpRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-primary" />
+                </div>
+                <CardTitle className="text-xl">Social Media Hub</CardTitle>
+                <CardDescription className="line-clamp-2">
+                  Combine and manage all your social media platforms in one place. Schedule posts and track engagement.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs font-medium text-muted-foreground flex items-center">
+                  Powered by Alif Growth Media
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="#" target="_blank" rel="noopener noreferrer" className="group">
+            <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md bg-card/50 hover:bg-card">
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500">
+                    <BarChart className="size-5" />
+                  </div>
+                  <ArrowUpRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-primary" />
+                </div>
+                <CardTitle className="text-xl">Business Intelligence</CardTitle>
+                <CardDescription className="line-clamp-2">
+                  Powerful analytics and Power BI dashboards. Visualize your CRM data to drive growth and insights.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs font-medium text-muted-foreground flex items-center">
+                  Powered by Alif Growth Media
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>
