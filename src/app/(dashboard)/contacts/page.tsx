@@ -95,6 +95,16 @@ export default function ContactsPage() {
   const [directoryOpen, setDirectoryOpen] = useState(false);
   const [directoryContact, setDirectoryContact] = useState<ContactWithTags | null>(null);
 
+  // Keep directoryContact in sync with contacts updates (e.g., after editing a contact)
+  useEffect(() => {
+    if (directoryContact) {
+      const updated = contacts.find((c) => c.id === directoryContact.id);
+      if (updated && updated !== directoryContact) {
+        setDirectoryContact(updated);
+      }
+    }
+  }, [contacts, directoryContact]);
+
   // Bulk selection (page-scoped — only the loaded rows are selectable)
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
