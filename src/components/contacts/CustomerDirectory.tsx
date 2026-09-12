@@ -74,6 +74,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
     service_code: "",
     total_amount: "",
     currency: "INR",
+    status: "PAID",
     itemsText: ""
   });
   const [savingEdit, setSavingEdit] = useState(false);
@@ -87,6 +88,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
         service_code: inv.service_code || "",
         total_amount: String(inv.total_amount || ""),
         currency: inv.currency || "INR",
+        status: inv.status || "PAID",
         itemsText: inv.line_items?.map(i => `${i.name} (x${i.quantity}) = ${i.total}`).join('\n') || ""
       });
     } else {
@@ -97,6 +99,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
         service_code: "",
         total_amount: "",
         currency: "INR",
+        status: "PAID",
         itemsText: ""
       });
     }
@@ -188,7 +191,7 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
         currency: serviceForm.currency || 'INR',
         service_code: serviceForm.service_code || 'Custom Service',
         line_items,
-        status: 'PAID'
+        status: serviceForm.status || 'PAID'
     };
 
     if (editInvoice) {
@@ -388,6 +391,19 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
             <div className="space-y-2">
               <Label>Service Code / Name</Label>
               <Input value={serviceForm.service_code} onChange={(e) => setServiceForm({...serviceForm, service_code: e.target.value})} />
+            </div>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <select 
+                value={serviceForm.status}
+                onChange={(e) => setServiceForm({...serviceForm, status: e.target.value})}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="PAID">Paid</option>
+                <option value="PENDING">Pending</option>
+                <option value="UNPAID">Unpaid</option>
+                <option value="CANCELED">Canceled</option>
+              </select>
             </div>
           </div>
           <div className="space-y-2">
