@@ -36,7 +36,7 @@ export default function ToolsPage() {
             </Card>
           </Link>
           
-          <Link href="#" target="_blank" rel="noopener noreferrer" className="group">
+          <Link href="https://safar-postiz.vercel.app" target="_blank" rel="noopener noreferrer" className="group">
             <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md bg-card/50 hover:bg-card">
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
