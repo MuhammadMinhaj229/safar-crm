@@ -397,6 +397,25 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        
+        {/* Powered by AGM Attribution */}
+        <div className="flex items-center justify-center p-3 mt-1">
+          <a
+            href="https://alif-growth.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 transition-opacity hover:opacity-80"
+          >
+            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              Powered by
+            </span>
+            <img 
+              src="/alif-logo.png" 
+              alt="Alif Growth Media" 
+              className="h-4 w-auto object-contain" 
+            />
+          </a>
+        </div>
       </aside>
     </>
   );

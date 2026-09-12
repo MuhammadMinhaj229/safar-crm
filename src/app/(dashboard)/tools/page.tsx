@@ -14,7 +14,7 @@ export default function ToolsPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Link href="https://safar-invoice-generator.vercel.app/" target="_blank" rel="noopener noreferrer" className="group">
+          <Link href="https://invofy-lh33t1c53-mohammed-minhajs-projects-8071d846.vercel.app/en" target="_blank" rel="noopener noreferrer" className="group">
             <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md bg-card/50 hover:bg-card">
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
