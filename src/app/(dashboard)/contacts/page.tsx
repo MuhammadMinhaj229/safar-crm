@@ -100,7 +100,7 @@ export default function ContactsPage() {
     if (directoryContact) {
       const updated = contacts.find((c) => c.id === directoryContact.id);
       if (updated && updated !== directoryContact) {
-        setDirectoryContact(updated);
+        queueMicrotask(() => setDirectoryContact(updated));
       }
     }
   }, [contacts, directoryContact]);
