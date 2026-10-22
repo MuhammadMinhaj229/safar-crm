@@ -672,7 +672,7 @@ async function runStep(step: AutomationStep, args: ExecuteArgs): Promise<string>
         }
 
         if (chosenBranch) {
-            let collectedData = sr.collected_data || {}
+            const collectedData = sr.collected_data || {}
             if (chosenBranch.answer_text === '*TEXT_INPUT*' && args.context.message_text) {
                 const { data: node } = await db.from('decision_tree_nodes').select('node_type').eq('id', sr.current_node_id).single()
                 if (node && node.node_type) {
