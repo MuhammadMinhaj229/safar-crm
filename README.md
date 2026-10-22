@@ -10,6 +10,20 @@
 
 ---
 
+## Architecture Flow
+
+```mermaid
+flowchart TD
+    Inbound["Inbound Customer WhatsApp Query"] --> Webhook["Next.js Webhook Receiver"]
+    Webhook --> Engine["Workflow Decision Tree (@xyflow/react)"]
+    Engine --> AutoReply["Automated Catalog & Greeting Dispatch"]
+    Engine --> TeamInbox["Shared Multi-Agent Team Inbox"]
+    TeamInbox --> Pipeline["Lead Stages (New -> Quoted -> Closed)"]
+    Pipeline --> Storage[("Supabase Real-Time Storage")]
+```
+
+---
+
 ## Core Features
 
 - **Unified Team WhatsApp Inbox:** Multiple team members can reply to incoming WhatsApp inquiries from one shared dashboard.
