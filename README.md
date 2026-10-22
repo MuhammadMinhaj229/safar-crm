@@ -10,7 +10,7 @@
 
 ---
 
-## ⚡ Core Features
+## Core Features
 
 - **Unified Team WhatsApp Inbox:** Multiple team members can reply to incoming WhatsApp inquiries from one shared dashboard.
 - **Visual Automation Workflows:** Powered by `@xyflow/react` and `@dagrejs/dagre` for drag-and-drop conversational decision trees and auto-routing.
@@ -20,7 +20,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework:** Next.js 14, React, TypeScript
 - **Visual Flow Editor:** `@xyflow/react`, `@dagrejs/dagre`
@@ -30,7 +30,7 @@
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 ```bash
 # 1. Clone repository
@@ -59,7 +59,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 🚀 How to Deploy to Vercel
+## How to Deploy to Vercel
 
 1. Push your repository to GitHub.
 2. In **Vercel**, select **Add New Project** and import `safar-crm`.
@@ -69,6 +69,6 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 👤 Author & Support
+## Author & Support
 Engineered by **Mohammed Minhaj Mahmood** for SAFAR N MANZIL & Alif Growth Media.  
-Contact: [hello.alifstudio@gmail.com](mailto:hello.alifstudio@gmail.com).
+Contact: [minhajmuhammad229@gmail.com](mailto:minhajmuhammad229@gmail.com).
