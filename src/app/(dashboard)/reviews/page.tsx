@@ -119,7 +119,9 @@ export default function ReviewsPage() {
   }, [supabase, page, search, statusFilter]);
 
   useEffect(() => {
-    fetchReviews();
+    queueMicrotask(() => {
+      fetchReviews();
+    });
   }, [fetchReviews]);
 
   async function updateStatus(id: string, newStatus: string) {
