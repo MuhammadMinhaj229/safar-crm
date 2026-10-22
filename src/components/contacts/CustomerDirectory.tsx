@@ -127,7 +127,9 @@ export function CustomerDirectory({ open, onOpenChange, contact }: CustomerDirec
 
   useEffect(() => {
     if (open && contact) {
-      fetchInvoices();
+      queueMicrotask(() => {
+        fetchInvoices();
+      });
     }
   }, [open, contact, fetchInvoices]);
 
