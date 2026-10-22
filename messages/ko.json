@@ -40,7 +40,10 @@
     "menuSettings": "설정",
     "menuSignOut": "로그아웃",
     "requests": "Vendors & Partners",
-    "tools": "Tools"
+    "tools": "Tools",
+    "leads": "리드",
+    "reviews": "리뷰",
+    "Service Requests": "서비스 요청"
   },
   "Header": {
     "dashboard": "대시보드",
